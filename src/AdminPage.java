@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 public class AdminPage extends JFrame  implements ActionListener{
 	static DBConnection con = new DBConnection();
 	public static void main(String[] args) {
-		con.connect();
+		 con.connect();
 	}
 	
 	String[] tables = {null ,"영화","상영일정","상영관", "티켓", "좌석", "회원고객", "예매정보"};
@@ -318,7 +318,7 @@ public class AdminPage extends JFrame  implements ActionListener{
 
 		@Override
         public void actionPerformed(ActionEvent e1) {
-        	
+			
         }	
 		
 	}
