@@ -12,7 +12,7 @@ public class DBConnection{
 	
 	public void connect() {
 		String Driver="";
-		String url="jdbc:mysql://localhost:3306/mydb?user=root&serverTimezone=Asia/Seoul&useSSL=false";
+		String url="jdbc:mysql://localhost:3306/?user=root&serverTimezone=Asia/Seoul&useSSL=false";
 		String userid="root";
 		String pwd = "0907";
 		
