@@ -21,9 +21,13 @@ import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class AdminPage extends JFrame  implements ActionListener{
-	static DBConnection con = new DBConnection();
+	Connection connection;
+    Statement stmt;
+    String query;
+    ResultSet rs;
+	   
 	public static void main(String[] args) {
-		 con.connect();
+		 new AdminPage();
 	}
 	
 	String[] tables = {null ,"영화","상영일정","상영관", "티켓", "좌석", "회원고객", "예매정보"};
@@ -47,6 +51,9 @@ public class AdminPage extends JFrame  implements ActionListener{
 	
 	AdminPage(){
 		super("관리자 화면"); //타이틀
+		
+		connect();
+		
 		JPanel panel = new JPanel();
 		JButton btnInit = new JButton("초기화");
 		JButton btnShow = new JButton("전체 테이블 보기");
@@ -92,6 +99,314 @@ public class AdminPage extends JFrame  implements ActionListener{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 	}
+	
+	public void connect() {
+	      String Driver = "";
+	      String url = "jdbc:mysql://localhost:3306/mydb?user=root&serverTimezone=Asia/Seoul&useSSL=false";
+	      String userid = "root";
+	      String pwd = "0907";
+
+	      try {
+	         Class.forName("com.mysql.cj.jdbc.Driver");
+	         System.out.println("드라이브 로드 성공");
+	      } catch (ClassNotFoundException e) {
+	         e.printStackTrace();
+	      }
+
+	      try {
+	         System.out.println("드라이브 연결 준비...");
+	         connection = DriverManager.getConnection(url, userid, pwd);
+	         System.out.println("드라이브 연결 성공");
+	      } catch (SQLException e) {
+	         e.printStackTrace();
+
+	      }
+	}
+
+	
+	class ActionListenerInit implements ActionListener{
+
+		@Override
+        public void actionPerformed(ActionEvent e1) {
+			InitDB();
+        }	
+		
+	}
+	
+	public void InitDB() {
+	      
+	      try {
+	         stmt = connection.createStatement();
+	         
+	         // madang 초기화
+	         System.out.println("madang 초기화");
+	         stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`screening_schedule`;");
+	         stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`ticket`;");
+	         stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`seat`;");
+	         stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`movie`;");
+	         stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`theaters`;");
+	         stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`booking_info`;");  
+	         stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`user`;");
+	             
+	         
+	         stmt.executeUpdate("USE `madang` ;");
+	         
+	         
+	         // Table `madang`.'movie'
+
+	         
+	         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`movie` (\r\n" + 
+	               "  `movie_number` INT(11) NOT NULL,\r\n" + 
+	               "  `movie_name` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `movie_time` INT(11) NULL DEFAULT NULL,\r\n" + 
+	               "  `movie_rating` INT(11) NULL DEFAULT NULL,\r\n" + 
+	               "  `director_name` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `actor_name` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `genre` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `movie_introduction` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `movie_start_date` DATE NULL DEFAULT NULL,\r\n" + 
+	               "  PRIMARY KEY (`movie_number`))");
+	               
+	         System.out.println("Table `madang`.`movie` CREATE 완료");
+	         
+
+	         // Table `madang`.`theaters`
+	                  
+	         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`theaters` (\r\n" + 
+	               "  `theater_number` INT(11) NOT NULL,\r\n" + 
+	               "  `seat_count` INT(11) NULL DEFAULT NULL,\r\n" + 
+	               "  `theater_use_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  PRIMARY KEY (`theater_number`))");   
+	               
+	         
+	         System.out.println("Table `madang`.`theaters` CREATE 완료");
+	         
+	         
+	         // Table `madang`.`screening_schedule`
+	        
+	         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`screening_schedule` (\r\n" + 
+	               "  `screening_schedule_number` INT(11) NOT NULL,\r\n" + 
+	               "  `movie_number` INT(11) NOT NULL,\r\n" + 
+	               "  `theater_number` INT(11) NOT NULL,\r\n" + 
+	               "  `screening_start_date` DATE NULL DEFAULT NULL,\r\n" + 
+	               "  `screening_day` VARCHAR(10) NULL DEFAULT NULL,\r\n" + 
+	               "  `screening_count` INT(11) NULL DEFAULT NULL,\r\n" + 
+	               "  `screening_start_time` TIME NULL DEFAULT NULL,\r\n" + //테이블 안에 들어가는 외래키 모두 주키?
+	               "  PRIMARY KEY (`screening_schedule_number`),\r\n" +       
+	               "  CONSTRAINT `fk_movie_movie_number`\r\n" + 
+	               "    FOREIGN KEY (`movie_number`)\r\n" + 
+	               "    REFERENCES `madang`.`movie` (`movie_number`)\r\n" + 
+	               "    ON DELETE NO ACTION\r\n" + 
+	               "    ON UPDATE NO ACTION,\r\n" + 
+	               "  CONSTRAINT `fk_theaters_theater_number`\r\n" + 
+	               "    FOREIGN KEY (`theater_number`)\r\n" + 
+	               "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
+	               "    ON DELETE NO ACTION\r\n" + 
+	               "    ON UPDATE NO ACTION)");
+	         
+	         System.out.println("Table `madang`.`screening_schedule` CREATE 완료");
+	         
+	         // Table `madang`.'seat`
+	         // 주키 설정 팔
+	                  
+	         //여기
+	         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`seat` (\r\n" + 
+	               "  `seat_number` INT(11) NOT NULL,\r\n" + // null?
+	               "  `theater_number` INT(11) NOT NULL,\r\n" + 
+	               "  `seat_use_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	              // "  CONSTRAINT pk_seat`\r\n" + 
+	               "  PRIMARY KEY (`seat_number`))" );
+//	               "  CONSTRAINT `fk_theaters_theater_number`\r\n" + 
+//	               "    FOREIGN KEY (`theater_number`)\r\n" + 
+//	               "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
+//	               "    ON DELETE NO ACTION\r\n" + 
+//	               "    ON UPDATE NO ACTION)"); 
+	         
+	         
+	         System.out.println("Table `madang`.`seat` CREATE 완료");
+	         
+	         // Table `madang`.`ticket`
+
+	         // 여기
+	         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`ticket` (\r\n" + 
+	               "  `tichet_number` INT(11) NOT NULL,\r\n" + 
+	               "  `screenig_schedule_number` INT(11) NOT NULL,\r\n" + 
+	               "  `theater_number` INT(11) NOT NULL,\r\n" + 
+	               "  `seat_number` INT(11) NULL DEFAULT NULL,\r\n" + // 키 설정 필요    
+	               "  `booking_number` INT(11) NOT NULL,\r\n" + 
+	               "  `ticketing_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `standard_price` INT(11) NULL DEFAULT NULL,\r\n" + 
+	               "  `selling_price` INT(11) NULL DEFAULT NULL,\r\n" + 
+	               "  PRIMARY KEY (`tichet_number`),\r\n" +
+	               "  CONSTRAINT `fk_theaters_theater_number_ticket`\r\n" + 
+	               "    FOREIGN KEY (`theater_number`)\r\n" + 
+	               "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
+	               "    ON DELETE NO ACTION\r\n" + 
+	               "    ON UPDATE NO ACTION,\r\n" + 
+	               "  CONSTRAINT `fk_seat_seat_number`\r\n" + 
+	               "    FOREIGN KEY (`seat_number`)\r\n" + 
+	               "    REFERENCES `madang`.`seat` (`seat_number`)\r\n" + 
+	               "    ON DELETE NO ACTION\r\n" + 
+	               "    ON UPDATE NO ACTION)");
+	               
+	         
+	         
+	         System.out.println("Table `madang`.`ticket` CREATE 완료");
+	         
+	        
+	         
+	         // Table `madang`.`user`
+
+	                  
+	         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`user` (\r\n" + 
+	               "  `user_id` VARCHAR(45) NOT NULL,\r\n" + 
+	               "  `user_name` VARCHAR(45)  NULL DEFAULT NULL,\r\n" + 
+	               "  `user_phone_number` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `user_email_address` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  PRIMARY KEY (`user_id`))");   
+	         System.out.println("Table `madang`.`user` CREATE 완료");
+	         
+	         // Table `madang`.`booking_info`
+	         
+	                  
+	         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`booking_info` (\r\n" + 
+	               "  `booking_number` INT(11) NOT NULL,\r\n" + 
+	               "  `payment_method` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `payment_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `payment_amount` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+	               "  `user_id` VARCHAR(45) NOT NULL,\r\n" + 
+	               "  `payment_date` DATE NULL DEFAULT NULL,\r\n" + 
+	               "  PRIMARY KEY (`booking_number`),\r\n" +
+	               "  CONSTRAINT `fk_user_user_id`\r\n" + 
+	               "    FOREIGN KEY (`user_id`)\r\n" + 
+	               "    REFERENCES `madang`.`user` (`user_id`)\r\n" + 
+	               "    ON DELETE NO ACTION\r\n" + 
+	               "    ON UPDATE NO ACTION)"); 
+	         
+	         System.out.println("Table `madang`.`booking_info` CREATE 완료");
+	         
+	         // INSERT INTO movie
+	         System.out.println("INSERT INTO movie");   // 개봉일정 수정필요  
+	         stmt.executeUpdate("INSERT INTO movie VALUES(1, '범죄도시2', '106', 19, '이상용', '손석구', '범죄', '손석구가다했다', '2021-01-02');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(2, '닥터 스트레인지', '126', 15,  '샘 레이미', '베네딕트 컴버배치', '마블', '마블 영화이다', '2021-02-03');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(3, '그대가 조국', '124', 15, '이승준', '감병석', '다큐멘터리', '다큐멘터리 영화이다', '2021-03-01');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(4, '피는 물보다 진하다', '90', 12, '김희성', '조동혁', '액션', '액션영화이다', '2021-04-01');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(5, '안녕하세요', '118', 12, '차봉주', '김환희', '드라마', '드라마 영화이다', '2021-05-01');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(6, '브로커', '129', 15, '고레에다 히로카즈', '송강호', '드라마', '드라마 영화이다', '2021-06-01');");      
+	         stmt.executeUpdate("INSERT INTO movie VALUES(7, '아치의 노래', '113', 15, '고영재', '정태춘', '다큐멘터리', '다큐멘터리 영화이다', '2021-07-01');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(8, '오마주', '108', 18,  '신수원', '이정은', '드라마', '드라마 영화이다', '2021-08-01');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(9, '쥬라기 월드: 도미니언', '147', 12, '콜린 트레보로우', '크리스 프랫', '액션', '액션영화이다', '2021-09-01');");
+	         stmt.executeUpdate("INSERT INTO movie VALUES(10, '베르네 부인의 장미정원', '95', 12, '피에르 피노드', '카트린 프로', '드라마', '드라마 영화이다', '2021-10-01');");
+	         
+	         // INSERT INTO theaters
+	         System.out.println("INSERT INTO theaters");   
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(1, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(2, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(3, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(4, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(5, 2, 'o');");                                                                                                                                                                                         
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(6, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(7, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(8, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(9, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO theaters VALUES(10, 2, 'o');");
+	         
+	         // INSERT INTO screening_schedule
+	         System.out.println("INSERT INTO screening_schedule");   
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(1, 1, 1, STR_TO_DATE('2022-05-01','%Y-%m-%d'), '일요일', 1, TIME_FORMAT('08:00', '%H:%i'));");         
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(2, 2, 2, STR_TO_DATE('2022-05-02','%Y-%m-%d'), '월요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(3, 3, 3, STR_TO_DATE('2022-05-03','%Y-%m-%d'), '화요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(4, 4, 4, STR_TO_DATE('2022-05-04','%Y-%m-%d'), '수요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(5, 5, 5, STR_TO_DATE('2022-05-05','%Y-%m-%d'), '목요일', 1, TIME_FORMAT('08:00', '%H:%i'));");
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(6, 6, 6, STR_TO_DATE('2022-05-06','%Y-%m-%d'), '금요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(7, 7, 7, STR_TO_DATE('2022-05-07','%Y-%m-%d'), '토요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(8, 8, 8, STR_TO_DATE('2022-05-08','%Y-%m-%d'), '일요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(9, 9, 9, STR_TO_DATE('2022-05-09','%Y-%m-%d'), '월요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+	         stmt.executeUpdate("INSERT INTO screening_schedule VALUES(10, 10, 10, STR_TO_DATE('2022-05-10','%Y-%m-%d'), '화요일', 1, TIME_FORMAT('08:00', '%H:%i'));");      
+
+
+	         // INSERT INTO seat
+	         System.out.println("INSERT INTO seat");   
+	         stmt.executeUpdate("INSERT INTO seat VALUES(1, 1, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(2, 1, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(3, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(4, 2, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(5, 3, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(6, 3, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(7, 4, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(8, 4, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(9, 5, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(10, 5, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(11, 6, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(12, 6, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(13, 7, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(14, 7, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(15, 8, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(16, 8, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(17, 9, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(18, 9, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(19, 10, 'o');");
+	         stmt.executeUpdate("INSERT INTO seat VALUES(20, 10, 'o');");
+	         
+	         // INSERT INTO ticket
+	         System.out.println("INSERT INTO ticket");   
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(1, 1, 1, 1, 1, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(2, 1, 1, 2, 2, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(3, 2, 2, 3, 3, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(4, 2, 2, 4, 4, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(5, 3, 3, 5, 5, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(6, 3, 3, 6, 6, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(7, 4, 4, 7, 7, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(8, 4, 4, 8, 8, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(9, 5, 5, 9, 9, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(10, 5, 5, 10, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(11, 6, 5, 11, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(12, 6, 5, 12, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(13, 7, 5, 13, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(14, 7, 5, 14, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(15, 8, 5, 15, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(16, 8, 5, 16, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(17, 9, 5, 17, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(18, 9, 5, 18, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(19, 10, 5, 19, 10, 'x', '14000', '10000');");
+	         stmt.executeUpdate("INSERT INTO ticket VALUES(20, 10, 5, 20, 10, 'x', '14000', '10000');");
+	         
+	         
+	         
+
+	         // INSERT INTO user
+	         System.out.println("INSERT INTO user");   
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid1', '홍길동', '010-0001-0001', 'email1@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid2', '변영화', '010-0002-0002', 'email2@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid3', '영화변', '010-0003-0003', 'email3@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid4', '변무비', '010-0004-0004', 'email4@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid5', '정재경', '010-0005-0005', 'email5@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid6', '재경정', '010-0006-0006', 'email6@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid7', '경정재', '010-0007-0007', 'email7@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid8', '제임스', '010-0008-0008', 'email8@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid9', '화변영', '010-0009-0009', 'email9@naver.com');");
+	         stmt.executeUpdate("INSERT INTO user VALUES('newid10', '길동홍', '010-0010-0010', 'email10@naver.com');");
+	         
+	         // INSERT INTO booking_info
+	         System.out.println("INSERT INTO booking_info");   
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(1, '무통장입금', '정상', '7000', 'newid1', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(2, '무통장입금', '정상', '7000', 'newid2', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(3, '무통장입금', '정상', '7000', 'newid3', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(4, '무통장입금', '정상', '7000', 'newid4', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(5, '무통장입금', '정상', '7000', 'newid5', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(6, '무통장입금', '정상', '7000', 'newid6', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(7, '무통장입금', '정상', '7000', 'newid7', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(8, '무통장입금', '정상', '7000', 'newid8', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(9, '무통장입금', '정상', '7000', 'newid9', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         stmt.executeUpdate("INSERT INTO booking_info VALUES(10, '무통장입금', '정상', '7000', 'newid10', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
+	         
+	         
+	         System.out.println("Table 초기화 종료");   
+	      }catch(SQLException e10){
+	    	  e10.printStackTrace();
+	      }
+	}
+	
 	
 	public void actionPerformed(ActionEvent e) {
 		
@@ -312,15 +627,6 @@ public class AdminPage extends JFrame  implements ActionListener{
         public void actionPerformed(ActionEvent e) {
 			setBlockTableBox();
         }	
-	}
-	
-	class ActionListenerInit implements ActionListener{
-
-		@Override
-        public void actionPerformed(ActionEvent e1) {
-			
-        }	
-		
 	}
 	
 	class ActionListenerShow implements ActionListener{
