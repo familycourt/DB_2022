@@ -653,10 +653,9 @@ public class AdminPage extends JFrame  implements ActionListener{
    void showDB() {
 	   JPanel subPanel = new JPanel();
 	   new subFrame().add(subPanel);
-	   JTextArea txtOut = new JTextArea();
+	   JTextArea txtOut = new JTextArea(40,100);
 	   JScrollPane scroll = new JScrollPane(txtOut);
 	   subPanel.add(scroll);
-	   txtOut.setCaretPosition(txtOut.getDocument().getLength());
 
 	   txtOut.setEditable(false);	
 	     
@@ -788,7 +787,7 @@ public class AdminPage extends JFrame  implements ActionListener{
 	         String sql = "select * from booking_info;";
 	         stmt = connection.createStatement();
 	         rs = stmt.executeQuery(sql);
-	         txtOut.append("예매번호" + "\t" + "결제방법" + "\t" + "결제상태" + "\t" + "결제금액" + "\t" + "회원아이디" + "\t" + "결제일자" + "\n");
+	         txtOut.append("\n" + "예매번호" + "\t" + "결제방법" + "\t" + "결제상태" + "\t" + "결제금액" + "\t" + "회원아이디" + "\t" + "결제일자" + "\n");
   
 	         while (rs.next()) {
 	            String str = rs.getInt(1) + "\t" + rs.getString(2) + "\t" + rs.getString(3) + "\t" + rs.getString(4)
