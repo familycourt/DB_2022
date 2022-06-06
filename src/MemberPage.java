@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,23 +11,37 @@ import java.sql.Statement;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class MemberPage extends JFrame{
+	Connection connection;
+    Statement stmt;
+    String query;
+    ResultSet rs;
+
+    PreparedStatement pstmt;
+	
+	JTextArea txtOut = new JTextArea();
+	JButton btnGoTicketing = new JButton("영화 바로 예매하기");
+	
+	JTextField txtSearchMovie = new  JTextField(" 영화 이름을 입력해주세요 ");
+    JTextField txtSearchDirector = new  JTextField(" 감독 이름을 입력해주세요 ");
+    JTextField txtSearchActor = new  JTextField(" 배우 이름을 입력해주세요 ");
+    JTextField txtSearchGenre = new  JTextField("     장르를 입력해주세요     ");
+    
 	MemberPage(){
 		super("멤버 화면"); //타이틀
+		connect();
+		
         JPanel panel = new JPanel();
-        JTextField txtSearchMovie = new  JTextField(" 영화 이름을 입력해주세요 ");
-        JTextField txtSearchDirector = new  JTextField(" 감독 이름을 입력해주세요 ");
-        JTextField txtSearchActor = new  JTextField(" 배우 이름을 입력해주세요 ");
-        JTextField txtSearchJenre = new  JTextField("     장르를 입력해주세요     ");
         JButton btnSearchMovie = new JButton("조회");
         JButton btnSearchDirector = new JButton("조회");
         JButton btnSearchActor = new JButton("조회");
-        JButton btnSearchJenre = new JButton("조회");
+        JButton btnSearchGenre = new JButton("조회");
         JButton btnMyTicketing = new JButton("               예매 확인               ");
         
         panel.add(new JLabel("               영화 검색               "));
@@ -36,15 +51,20 @@ public class MemberPage extends JFrame{
         panel.add(btnSearchDirector);
         panel.add(txtSearchActor);
         panel.add(btnSearchActor);
-        panel.add(txtSearchJenre);
-        panel.add(btnSearchJenre);
+        panel.add(txtSearchGenre);
+        panel.add(btnSearchGenre);
+        panel.add(btnGoTicketing);
+        panel.add(txtOut);
         panel.add(btnMyTicketing);
         
         btnSearchMovie.addActionListener(new ActionListnerSearchMovie());
         btnSearchDirector.addActionListener(new ActionListnerSearchDirector());
         btnSearchActor.addActionListener(new ActionListnerSearchActor());
-        btnSearchJenre.addActionListener(new ActionListnerSearchJenre());
+        btnSearchGenre.addActionListener(new ActionListnerSearchGenre());
         btnMyTicketing.addActionListener(new ActionListnerMyTicketing());
+        
+        txtOut.setVisible(false);
+        btnGoTicketing.setVisible(false);
         
         add(panel);
 
@@ -53,6 +73,29 @@ public class MemberPage extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 	}
+	
+	public void connect() {
+        String Driver = "";
+        String url = "jdbc:mysql://localhost:3306/madang?user=root&serverTimezone=Asia/Seoul&useSSL=false";
+        String userid = "root";
+        String pwd = "0907";
+
+        try {
+           Class.forName("com.mysql.cj.jdbc.Driver");
+           System.out.println("드라이브 로드 성공");
+        } catch (ClassNotFoundException e) {
+           e.printStackTrace();
+        }
+
+        try {
+           System.out.println("드라이브 연결 준비...");
+           connection = DriverManager.getConnection(url, userid, pwd);
+           System.out.println("드라이브 연결 성공");
+        } catch (SQLException e) {
+           e.printStackTrace();
+
+        }
+  }
 	
 	class subFrame extends JFrame	{
 		public subFrame(){
@@ -66,20 +109,35 @@ public class MemberPage extends JFrame{
 	
 	
 	class ActionListnerSearchMovie implements ActionListener{
-		JPanel subPanel = new JPanel();
-		JTextField[] movieList = new JTextField[30];
-		int i;
 		
 		@Override
 	    public void actionPerformed(ActionEvent e) {
-			new subFrame().add(subPanel).setVisible(true);
-			for(i=0;i<10;i++) {
-				movieList[i] = new JTextField();
-				JTextField movieContent = new JTextField();
-				movieList[i] = movieContent;
-				
-				subPanel.add(movieList[i]);
+			try {
+			String text = txtSearchMovie.getText();
+			
+			String str="";
+			String sql = "select movie_name from movie where movie_name=?;";
+	        
+			pstmt = connection.prepareStatement(sql);
+			
+			pstmt.setString(1, text);
+			
+			rs = pstmt.executeQuery();
+
+			while (rs.next())
+			{
+				str = rs.getString(1);
+				System.out.println(str);				
 			}
+			
+			 txtOut.setText(str);
+			}catch (Exception e9) {
+	        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
+	        	  System.out.print(e9);
+	        }
+			
+			txtOut.setVisible(true);
+	        btnGoTicketing.setVisible(true);
 	    }	
 	}
 	
@@ -87,7 +145,31 @@ public class MemberPage extends JFrame{
 			
 			@Override
 		    public void actionPerformed(ActionEvent e1) {
-				new subFrame();
+				try {
+					String text = txtSearchDirector.getText();
+					
+					String str="";
+					String sql = "select movie_name from movie where director_name=?;";
+			        
+					pstmt = connection.prepareStatement(sql);
+					
+					pstmt.setString(1, text);
+					
+					rs = pstmt.executeQuery();
+
+					while (rs.next())
+					{
+						str = rs.getString(1);
+						System.out.println(str);				
+					}
+					
+					 txtOut.setText(str);
+					}catch (Exception e9) {
+			        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
+			        	  System.out.print(e9);
+			        }
+				txtOut.setVisible(true);
+		        btnGoTicketing.setVisible(true);
 		    }	
 		}
 	
@@ -95,15 +177,63 @@ public class MemberPage extends JFrame{
 		
 		@Override
 	    public void actionPerformed(ActionEvent e2) {
-			new subFrame();
+			try {
+				String text = txtSearchMovie.getText();
+				
+				String str="";
+				String sql = "select movie_name from movie where actor_name=?;";
+		        
+				pstmt = connection.prepareStatement(sql);
+				
+				pstmt.setString(1, text);
+				
+				rs = pstmt.executeQuery();
+
+				while (rs.next())
+				{
+					str = rs.getString(1);
+					System.out.println(str);				
+				}
+				
+				 txtOut.setText(str);
+				}catch (Exception e9) {
+		        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
+		        	  System.out.print(e9);
+		        }
+			txtOut.setVisible(true);
+	        btnGoTicketing.setVisible(true);
 	    }	
 	}
 	
-	class ActionListnerSearchJenre implements ActionListener{
+	class ActionListnerSearchGenre implements ActionListener{
 		
 		@Override
 	    public void actionPerformed(ActionEvent e3) {
-			new subFrame();
+			try {
+				String text = txtSearchMovie.getText();
+				
+				String str="";
+				String sql = "select movie_name from movie where genre=?;";
+		        
+				pstmt = connection.prepareStatement(sql);
+				
+				pstmt.setString(1, text);
+				
+				rs = pstmt.executeQuery();
+
+				while (rs.next())
+				{
+					str = rs.getString(1);
+					System.out.println(str);				
+				}
+				
+				 txtOut.setText(str);
+				}catch (Exception e9) {
+		        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
+		        	  System.out.print(e9);
+		        }
+			txtOut.setVisible(true);
+	        btnGoTicketing.setVisible(true);
 		
 	    }	
 	}

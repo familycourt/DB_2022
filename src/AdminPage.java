@@ -15,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,6 +41,7 @@ public class AdminPage extends JFrame  implements ActionListener{
    JComboBox tableBox = new JComboBox(tables);
    JButton btnInput = new JButton("입력");
    JButton btnResetInput = new JButton("다시입력");
+   JTextField txtEdit = new JTextField(20);
    
    JTextField txt1 = new JTextField(10);
    JTextField txt2 = new JTextField(10);
@@ -66,23 +68,22 @@ public class AdminPage extends JFrame  implements ActionListener{
       JButton btnDelete = new JButton("삭제");
       JButton btnChange = new JButton("변경");
       JButton btnEnter = new JButton("확인");
-      JTextField txtEdit = new JTextField(20);
       
       panel.add(btnInit);
       panel.add(btnShow);
       panel.add(tableBox);
       panel.add(btnInput);
       panel.add(btnResetInput);
-      panel.add(btnDelete);
-      panel.add(btnChange);
+      editPanel.add(new JLabel("여기에 query문을 입력해주세요"));
       editPanel.add(txtEdit);
-      editPanel.add(btnEnter);
+      editPanel.add(btnDelete);
+      editPanel.add(btnChange);
       
       add(panel, BorderLayout.NORTH);
       add(editPanel, BorderLayout.SOUTH);
       add(inputPanel, BorderLayout.CENTER);
       resultPanel.setVisible(false);
-      editPanel.setVisible(false);
+      editPanel.setVisible(true);
       inputPanel.setVisible(false);
       btnResetInput.setVisible(false);
 
@@ -206,12 +207,12 @@ public class AdminPage extends JFrame  implements ActionListener{
                   "  CONSTRAINT `fk_movie_movie_number`\r\n" + 
                   "    FOREIGN KEY (`movie_number`)\r\n" + 
                   "    REFERENCES `madang`.`movie` (`movie_number`)\r\n" + 
-                  "    ON DELETE NO ACTION\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
                   "    ON UPDATE NO ACTION,\r\n" + 
                   "  CONSTRAINT `fk_theaters_theater_number`\r\n" + 
                   "    FOREIGN KEY (`theater_number`)\r\n" + 
                   "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
-                  "    ON DELETE NO ACTION\r\n" + 
+                  "    ON DELETE CASCADE\r\n" + 
                   "    ON UPDATE NO ACTION)");
             
             System.out.println("Table `madang`.`screening_schedule` CREATE 완료");
@@ -251,12 +252,12 @@ public class AdminPage extends JFrame  implements ActionListener{
                   "  CONSTRAINT `fk_theaters_theater_number_ticket`\r\n" + 
                   "    FOREIGN KEY (`theater_number`)\r\n" + 
                   "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
-                  "    ON DELETE NO ACTION\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
                   "    ON UPDATE NO ACTION,\r\n" + 
                   "  CONSTRAINT `fk_seat_seat_number`\r\n" + 
                   "    FOREIGN KEY (`seat_number`)\r\n" + 
                   "    REFERENCES `madang`.`seat` (`seat_number`)\r\n" + 
-                  "    ON DELETE NO ACTION\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
                   "    ON UPDATE NO ACTION)");
                   
             
@@ -290,7 +291,7 @@ public class AdminPage extends JFrame  implements ActionListener{
                   "  CONSTRAINT `fk_user_user_id`\r\n" + 
                   "    FOREIGN KEY (`user_id`)\r\n" + 
                   "    REFERENCES `madang`.`user` (`user_id`)\r\n" + 
-                  "    ON DELETE NO ACTION\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
                   "    ON UPDATE NO ACTION)"); 
             
             System.out.println("Table `madang`.`booking_info` CREATE 완료");
@@ -558,6 +559,7 @@ public class AdminPage extends JFrame  implements ActionListener{
              System.out.println("상영일정 테이블에 데이터 추가 성공");
 
           } catch (Exception e9) {
+        	  JOptionPane.showMessageDialog(null, "상영일정 테이블에 데이터 추가 실패");
              System.out.println("상영일정 테이블에 데이터 추가 실패 : " + e9);
           }
         }   
@@ -597,6 +599,7 @@ public class AdminPage extends JFrame  implements ActionListener{
              System.out.println("상영관 테이블에 데이터 추가 성공");
 
           } catch (Exception e9) {
+        	  JOptionPane.showMessageDialog(null, "상영관 테이블에 데이터 추가 실패");
              System.out.println("상영관 테이블에 데이터 추가 실패 : " + e9);
           }
         }   
@@ -651,6 +654,7 @@ public class AdminPage extends JFrame  implements ActionListener{
              System.out.println("티켓 테이블에 데이터 추가 성공");
 
           } catch (Exception e9) {
+        	  JOptionPane.showMessageDialog(null, "티켓 테이블에 데이터 추가 실패");
              System.out.println("티켓 테이블에 데이터 추가 실패 : " + e9);
           }
         }   
@@ -690,6 +694,7 @@ public class AdminPage extends JFrame  implements ActionListener{
              System.out.println("좌석 테이블에 데이터 추가 성공");
 
           } catch (Exception e9) {
+        	  JOptionPane.showMessageDialog(null, "좌석 테이블에 데이터 추가 실패");
              System.out.println("좌석 테이블에 데이터 추가 실패 : " + e9);
           }
         }   
@@ -732,6 +737,7 @@ public class AdminPage extends JFrame  implements ActionListener{
              System.out.println("회원고객 테이블에 데이터 추가 성공");
 
           } catch (Exception e9) {
+        	  JOptionPane.showMessageDialog(null, "회원고객 테이블에 데이터 추가 실패");
              System.out.println("회원고객 테이블에 데이터 추가 실패 : " + e9);
           }
         }   
@@ -780,6 +786,7 @@ public class AdminPage extends JFrame  implements ActionListener{
              System.out.println("예매정보 테이블에 데이터 추가 성공");
 
           } catch (Exception e9) {
+        	  JOptionPane.showMessageDialog(null, "예매정보 테이블에 데이터 추가 실패");
              System.out.println("예매정보 테이블에 데이터 추가 실패 : " + e9);
           }
         }   
@@ -973,7 +980,8 @@ public class AdminPage extends JFrame  implements ActionListener{
         public void actionPerformed(ActionEvent e3) {
          setBlockTableBox();
          resultPanel.setVisible(false);
-         editPanel.setVisible(false);
+         editPanel.setVisible(true);
+        
         }   
    }
    
@@ -981,9 +989,19 @@ public class AdminPage extends JFrame  implements ActionListener{
       
       @Override
         public void actionPerformed(ActionEvent e4) {
-         resultPanel.setVisible(false);
-         inputPanel.setVisible(false);
-         editPanel.setVisible(true);
+//         
+         try {
+         	
+ 			String sql="";
+ 			sql = txtEdit.getText();
+ 	        System.out.println(sql);
+ 			pstmt = connection.prepareStatement(sql);
+ 			pstmt.executeUpdate();
+ 			JOptionPane.showMessageDialog(null, "삭제완료");
+          }catch(Exception e){
+        	  JOptionPane.showMessageDialog(null, "삭제가 불가합니다.\n query문을 다시 입력해주세요");
+         	 System.out.print(e);
+          }
         }   
       
    }
@@ -992,9 +1010,18 @@ public class AdminPage extends JFrame  implements ActionListener{
 
       @Override
         public void actionPerformed(ActionEvent e5) {
-         resultPanel.setVisible(false);
-         inputPanel.setVisible(false);
-         editPanel.setVisible(true);
+         
+         try {
+          	
+  			String sql = txtEdit.getText();
+  	        System.out.println(sql);
+  			pstmt = connection.prepareStatement(sql);
+  			pstmt.executeUpdate();
+  			JOptionPane.showMessageDialog(null, "수정완료");
+           }catch(Exception e){
+        	   JOptionPane.showMessageDialog(null, "수정이 불가합니다.\n query문을 다시 입력해주세요");
+          	 System.out.print(e);
+           }
         }   
       
    }

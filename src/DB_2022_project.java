@@ -35,24 +35,21 @@ public class DB_2022_project extends JFrame{
         
         setVisible(true);
         setSize(300, 200); //창 크기 설정
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         btnAdmin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new AdminPage();
-                setVisible(false); // 창 안보이게 하기 
-                dispose();
+                new AdminPage(); 
+                
             }
         });
         
         btnMember.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new MemberPage();
-                setVisible(false); // 창 안보이게 하기 
-                dispose();
+                new MemberPage();// 창 안보이게 하기 
+               
             }
         });
 		
