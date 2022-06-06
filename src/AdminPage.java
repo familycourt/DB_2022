@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -49,6 +51,10 @@ public class AdminPage extends JFrame  implements ActionListener{
    JTextField txt8 = new JTextField(10);
    JTextField txt9 = new JTextField(10);
    
+   PreparedStatement pstmt;
+   JTextArea txtOut;
+   JFrame frame;
+   
    AdminPage(){
       super("관리자 화면"); //타이틀
       
@@ -60,7 +66,6 @@ public class AdminPage extends JFrame  implements ActionListener{
       JButton btnDelete = new JButton("삭제");
       JButton btnChange = new JButton("변경");
       JButton btnEnter = new JButton("확인");
-      JScrollPane resultPane = new JScrollPane(txtArea);
       JTextField txtEdit = new JTextField(20);
       
       panel.add(btnInit);
@@ -70,14 +75,11 @@ public class AdminPage extends JFrame  implements ActionListener{
       panel.add(btnResetInput);
       panel.add(btnDelete);
       panel.add(btnChange);
-      panel.add(resultPane);
       editPanel.add(txtEdit);
       editPanel.add(btnEnter);
-      resultPanel.add(resultPane);
       
       add(panel, BorderLayout.NORTH);
-      add(resultPanel, BorderLayout.CENTER);
-      add(editPanel, BorderLayout.CENTER);
+      add(editPanel, BorderLayout.SOUTH);
       add(inputPanel, BorderLayout.CENTER);
       resultPanel.setVisible(false);
       editPanel.setVisible(false);
@@ -92,7 +94,7 @@ public class AdminPage extends JFrame  implements ActionListener{
       btnDelete.addActionListener(new ActionListenerDelete());
       btnChange.addActionListener(new ActionListenerChange());
       
-        setSize(840, 630); 
+        setSize(840, 200); 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -482,6 +484,31 @@ public class AdminPage extends JFrame  implements ActionListener{
       @Override
         public void actionPerformed(ActionEvent e) {
          setBlockTableBox();
+         
+         try {
+
+             System.out.println("영화 테이블에 데이터 추가 시도...");
+
+             String query = "INSERT INTO movie VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+             pstmt = connection.prepareStatement(query);
+
+             pstmt.setInt(1, Integer.parseInt(txt1.getText()));
+             pstmt.setString(2, txt2.getText());
+             pstmt.setInt(3, Integer.parseInt(txt3.getText()));
+             pstmt.setInt(4, Integer.parseInt(txt4.getText()));
+             pstmt.setString(5, txt5.getText());
+             pstmt.setString(6, txt6.getText());
+             pstmt.setString(7, txt7.getText());
+             pstmt.setString(8, txt8.getText());
+             pstmt.setString(9, txt9.getText());
+             pstmt.executeUpdate();
+
+             System.out.println("영화 테이블에 데이터 추가 성공");
+
+          } catch (Exception e9) {
+        	  JOptionPane.showMessageDialog(null, "영화 테이블에 데이터 추가 실패");
+             System.out.println("영화 테이블에 데이터 추가 실패 : " + e9);
+          }
         }   
    }
    
@@ -511,6 +538,28 @@ public class AdminPage extends JFrame  implements ActionListener{
       @Override
         public void actionPerformed(ActionEvent e) {
          setBlockTableBox();
+         
+         try {
+
+             System.out.println("상영일정 테이블에 데이터 추가 시도...");
+
+             String query = "INSERT INTO screening_schedule VALUES (?, ?, ?, ?, ?, ?, ?)";
+             pstmt = connection.prepareStatement(query);
+
+             pstmt.setInt(1, Integer.parseInt(txt1.getText()));
+             pstmt.setInt(2, Integer.parseInt(txt2.getText()));
+             pstmt.setInt(3, Integer.parseInt(txt3.getText()));
+             pstmt.setString(4, txt4.getText());
+             pstmt.setString(5, txt5.getText());
+             pstmt.setInt(6, Integer.parseInt(txt6.getText()));
+             pstmt.setString(7, txt7.getText());
+             pstmt.executeUpdate();
+
+             System.out.println("상영일정 테이블에 데이터 추가 성공");
+
+          } catch (Exception e9) {
+             System.out.println("상영일정 테이블에 데이터 추가 실패 : " + e9);
+          }
         }   
    }
    
@@ -532,6 +581,24 @@ public class AdminPage extends JFrame  implements ActionListener{
       @Override
         public void actionPerformed(ActionEvent e) {
          setBlockTableBox();
+         
+         try {
+
+             System.out.println("상영관 테이블에 데이터 추가 시도...");
+
+             String query = "INSERT INTO theaters VALUES (?, ?, ?)";
+             pstmt = connection.prepareStatement(query);
+
+             pstmt.setInt(1, Integer.parseInt(txt1.getText()));
+             pstmt.setInt(2, Integer.parseInt(txt2.getText()));
+             pstmt.setString(3, txt3.getText());
+             pstmt.executeUpdate();
+
+             System.out.println("상영관 테이블에 데이터 추가 성공");
+
+          } catch (Exception e9) {
+             System.out.println("상영관 테이블에 데이터 추가 실패 : " + e9);
+          }
         }   
    }
    
@@ -563,6 +630,29 @@ public class AdminPage extends JFrame  implements ActionListener{
       @Override
         public void actionPerformed(ActionEvent e) {
          setBlockTableBox();
+         
+         try {
+
+             System.out.println("티켓 테이블에 데이터 추가 시도...");
+
+             String query = "INSERT INTO ticket VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+             pstmt = connection.prepareStatement(query);
+
+             pstmt.setInt(1, Integer.parseInt(txt1.getText()));
+             pstmt.setInt(2, Integer.parseInt(txt2.getText()));
+             pstmt.setInt(3, Integer.parseInt(txt3.getText()));
+             pstmt.setInt(4, Integer.parseInt(txt4.getText()));
+             pstmt.setInt(5, Integer.parseInt(txt5.getText()));
+             pstmt.setString(6, txt6.getText());
+             pstmt.setInt(7, Integer.parseInt(txt7.getText()));
+             pstmt.setInt(8, Integer.parseInt(txt8.getText()));
+             pstmt.executeUpdate();
+
+             System.out.println("티켓 테이블에 데이터 추가 성공");
+
+          } catch (Exception e9) {
+             System.out.println("티켓 테이블에 데이터 추가 실패 : " + e9);
+          }
         }   
    }
    
@@ -584,6 +674,24 @@ public class AdminPage extends JFrame  implements ActionListener{
       @Override
         public void actionPerformed(ActionEvent e) {
          setBlockTableBox();
+         
+         try {
+
+             System.out.println("좌석 테이블에 데이터 추가 시도...");
+
+             String query = "INSERT INTO seat VALUES (?, ?, ?)";
+             pstmt = connection.prepareStatement(query);
+
+             pstmt.setInt(1, Integer.parseInt(txt1.getText()));
+             pstmt.setInt(2, Integer.parseInt(txt2.getText()));
+             pstmt.setString(3, txt3.getText());
+             pstmt.executeUpdate();
+
+             System.out.println("좌석 테이블에 데이터 추가 성공");
+
+          } catch (Exception e9) {
+             System.out.println("좌석 테이블에 데이터 추가 실패 : " + e9);
+          }
         }   
    }
    
@@ -607,6 +715,25 @@ public class AdminPage extends JFrame  implements ActionListener{
       @Override
         public void actionPerformed(ActionEvent e) {
          setBlockTableBox();
+         
+         try {
+
+             System.out.println("회원고객 테이블에 데이터 추가 시도...");
+
+             String query = "INSERT INTO user VALUES (?, ?, ?, ?)";
+             pstmt = connection.prepareStatement(query);
+
+             pstmt.setString(1, txt1.getText());
+             pstmt.setString(2, txt2.getText());
+             pstmt.setString(3, txt3.getText());
+             pstmt.setString(4, txt4.getText());
+             pstmt.executeUpdate();
+
+             System.out.println("회원고객 테이블에 데이터 추가 성공");
+
+          } catch (Exception e9) {
+             System.out.println("회원고객 테이블에 데이터 추가 실패 : " + e9);
+          }
         }   
    }
    
@@ -634,6 +761,27 @@ public class AdminPage extends JFrame  implements ActionListener{
       @Override
         public void actionPerformed(ActionEvent e) {
          setBlockTableBox();
+         
+         try {
+
+             System.out.println("예매정보 테이블에 데이터 추가 시도...");
+
+             String query = "INSERT INTO booking_info VALUES (?, ?, ?, ?, ?, ?)";
+             pstmt = connection.prepareStatement(query);
+
+             pstmt.setInt(1, Integer.parseInt(txt1.getText()));
+             pstmt.setString(2, txt2.getText());
+             pstmt.setString(3, txt3.getText());
+             pstmt.setString(4, txt4.getText());
+             pstmt.setString(5, txt5.getText());
+             pstmt.setString(6, txt6.getText());
+             pstmt.executeUpdate();
+
+             System.out.println("예매정보 테이블에 데이터 추가 성공");
+
+          } catch (Exception e9) {
+             System.out.println("예매정보 테이블에 데이터 추가 실패 : " + e9);
+          }
         }   
    }
    
@@ -657,7 +805,7 @@ public class AdminPage extends JFrame  implements ActionListener{
 	   JScrollPane scroll = new JScrollPane(txtOut);
 	   subPanel.add(scroll);
 
-	   txtOut.setEditable(false);	
+	   txtOut.setEditable(false);
 	     
 	   // 1. 영화 테이블 출력
 	   try {
