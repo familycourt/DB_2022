@@ -29,6 +29,7 @@ public class MemberPage extends JFrame{
 	JTextField txtInput = new JTextField(10);
 	JButton btnGoTicketing = new JButton("예매하기");
 	
+	JTextField txtUserName = new JTextField(10);
 	JTextField txtSearchMovie = new  JTextField(10);
     JTextField txtSearchDirector = new  JTextField(10);
     JTextField txtSearchActor = new  JTextField(10);
@@ -59,6 +60,8 @@ public class MemberPage extends JFrame{
         panel.add(txtInput);
         panel.add(btnGoTicketing);
         panel.add(new JLabel("================ 내 예매 확인하기 ================"));
+        panel.add(new JLabel("이름  --------------  "));
+        panel.add(txtUserName);
         panel.add(btnMyTicketing);
         
         btnSearchMovie.addActionListener(new ActionListnerSearchMovie());
@@ -68,7 +71,7 @@ public class MemberPage extends JFrame{
         
         add(panel);
 
-        setSize(300, 800); 
+        setSize(330, 800); 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -100,7 +103,7 @@ public class MemberPage extends JFrame{
 	class subFrame extends JFrame	{
 		public subFrame(){
 			setVisible(true);
-	        setSize(1200, 800);
+	        setSize(700, 500);
 	        setLocationRelativeTo(null);
 	       
 	        
@@ -180,12 +183,7 @@ public class MemberPage extends JFrame{
 				txtOut.append(" / ");
 				
 			}
-			
-			System.out.println(txtOut);
-			
-			if(txtOut.equals("")) {
-				txtOut.setText("검색된 영화가 없습니다.");
-			}
+				// 예외
 				
 			
 			}catch (Exception e9) {
@@ -196,19 +194,46 @@ public class MemberPage extends JFrame{
 			txtOut.setVisible(true);
 	    }	
 	}
-	
+	 	
 
 	
 	class ActionListnerMyTicketing implements ActionListener{
+		String userId = ""; 
 		JPanel subPanel = new JPanel();
 		JTextField txtTicketNumber = new JTextField(5);
 		JButton btnShowAll = new JButton("예매 상세");
 		JButton btnDelete = new JButton("동일 영화 정보");
 		JButton btnChangeMovie = new JButton("예매 영화 변경");
 		JButton btnChangeTime = new JButton("상영 일자 변경");
-		JTextField movieList = new JTextField(100);
+		JTextArea movieList = new JTextArea();
 		@Override
 	    public void actionPerformed(ActionEvent e) {
+			try{
+				
+				String sql = "select user_id from user where user_name= \"";
+				sql = sql + txtUserName.getText() +"\" ;";
+				pstmt = connection.prepareStatement(sql);
+				System.out.println(sql);
+				rs = pstmt.executeQuery();
+				
+				while (rs.next())
+				{
+					userId = rs.getString(1);
+					System.out.println(userId);	
+					
+				}
+				
+			}
+			catch(Exception e1){
+				JOptionPane.showMessageDialog(null, "해당하는 사용자 이름이 존재하지 않습니다!");
+				System.out.println("실패 이유 : ");
+			      System.out.println(e1.getMessage());
+			}
+			
+			
+			if(userId.equals(""))
+				return;
+			
 			new subFrame().add(subPanel).setVisible(true);
 			
 			subPanel.add(new JLabel("티켓번호"));
@@ -219,12 +244,47 @@ public class MemberPage extends JFrame{
 			subPanel.add(btnChangeTime);
 			subPanel.add(movieList);
 			
+			movieList.setText("");
 			movieList.setEditable(false);
+			makeMyTicketList();
 			
 			btnShowAll.addActionListener(new ActionListnerShowAll());
 			btnDelete.addActionListener(new ActionListnerDelete());
 			btnChangeMovie.addActionListener(new ActionListnerChangeMovie());
 			btnChangeTime.addActionListener(new ActionListnerChangeTime());
+		}
+		
+		void makeMyTicketList() {
+			
+			try {
+		         movieList.setText("");
+		         movieList.append("\n" + "티켓번호" + "\t" +"영화명" + "\t" + "상영일" + "\t" + "상영관번호" + "\t" + "좌석번호" + "\t" + "판매가격 " + "\n");
+	  
+		         String sql = "select ticket.tichet_number, movie.movie_name, sched.screening_start_date, ticket.theater_number, ticket.seat_number, book.payment_amount\r\n"
+		         		+ "from booking_info as book\r\n"
+		         		+ "left join ticket\r\n"
+		         		+ "on book.booking_number = ticket.booking_number\r\n"
+		         		+ "left join screening_schedule as sched\r\n"
+		         		+ "on sched.screening_schedule_number = ticket.screening_schedule_number\r\n"
+		         		+ "left join movie\r\n"
+		         		+ "on movie.movie_number = sched.movie_number\r\n"
+		         		+ "where user_id =";
+		         sql = sql + " \"" + userId + "\";";
+		         System.out.println(sql);
+		         stmt = connection.createStatement();
+		         rs = stmt.executeQuery(sql);
+		         
+		         while (rs.next()) {
+		            String str = rs.getInt(1) + "\t" + rs.getString(2) + "\t" + rs.getDate(3) + "\t" + rs.getInt(4) 
+		            + "\t" + rs.getInt(5) + "\t" + rs.getInt(6) + "\n";
+		            System.out.println(str);
+		            movieList.append(str);
+		         }
+		         
+		      }catch (Exception e2) {
+		         System.out.println("실패 이유 : ");
+		         System.out.println(e2.getMessage());
+		      }
 		}
 		
 		class ActionListnerShowAll implements ActionListener{
