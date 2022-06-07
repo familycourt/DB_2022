@@ -25,9 +25,9 @@ public class MemberPage extends JFrame{
 
     PreparedStatement pstmt;
 	
-	JTextArea txtOut = new JTextArea("Á¶È¸ÇÑ ¿µÈ­°¡ ¾ø½À´Ï´Ù.");
+	JTextArea txtOut = new JTextArea("ì¡°íšŒí•œ ì˜í™”ê°€ ì—†ìŠµë‹ˆë‹¤.");
 	JTextField txtInput = new JTextField(10);
-	JButton btnGoTicketing = new JButton("¿¹¸ÅÇÏ±â");
+	JButton btnGoTicketing = new JButton("ì˜ˆë§¤í•˜ê¸°");
 	
 	JTextField txtUserName = new JTextField(10);
 	JTextField txtSearchMovie = new  JTextField(10);
@@ -36,42 +36,43 @@ public class MemberPage extends JFrame{
     JTextField txtSearchGenre = new  JTextField(10);
     
 	MemberPage(){
-		super("¸â¹ö È­¸é"); //Å¸ÀÌÆ²
+		super("ë©¤ë²„ í™”ë©´"); //íƒ€ì´í‹€
 		connect();
 		
         JPanel panel = new JPanel();
-        JButton btnSearchMovie = new JButton("                 Á¶  È¸                 ");
-        JButton btnMyTicketing = new JButton("               ¿¹¸Å È®ÀÎ               ");
+        JButton btnSearchMovie = new JButton("                 ì¡°  íšŒ                 ");
+        JButton btnMyTicketing = new JButton("               ì˜ˆë§¤ í™•ì¸               ");
         
-        panel.add(new JLabel("================== ¿µÈ­ °Ë»ö =================="));
-        panel.add(new JLabel("¿µÈ­ ÀÌ¸§ ------------"));
+        panel.add(new JLabel("================== ì˜í™” ê²€ìƒ‰ =================="));
+        panel.add(new JLabel("ì˜í™” ì´ë¦„ ------------"));
         panel.add(txtSearchMovie);
-        panel.add(new JLabel("°¨µ¶ ÀÌ¸§ ------------"));
+        panel.add(new JLabel("ê°ë… ì´ë¦„ ------------"));
         panel.add(txtSearchDirector);
-        panel.add(new JLabel("¹è¿ì ÀÌ¸§ -------------"));
+        panel.add(new JLabel("ë°°ìš° ì´ë¦„ -------------"));
         panel.add(txtSearchActor);
-        panel.add(new JLabel("Àå¸£ ÀÌ¸§ -------------"));
+        panel.add(new JLabel("ì¥ë¥´ ì´ë¦„ -------------"));
         panel.add(txtSearchGenre);
         panel.add(btnSearchMovie);
-        panel.add(new JLabel("================ Á¶È¸ÇÑ ¿µÈ­ ¸ñ·Ï ================"));
+        panel.add(new JLabel("================ ì¡°íšŒí•œ ì˜í™” ëª©ë¡ ================"));
         panel.add(txtOut);
-        panel.add(new JLabel("------------------ ¿µÈ­ ¿¹¸Å ------------------"));
-        panel.add(new JLabel("¿µÈ­ Á¦¸ñÀ» ÀÔ·ÂÇÏ¼¼¿ä"));
+        panel.add(new JLabel("----------------------- ì˜í™” ì˜ˆë§¤ -----------------------"));
+        panel.add(new JLabel("ì˜í™” ì œëª©ì„ ì…ë ¥í•˜ì„¸ìš”"));
         panel.add(txtInput);
         panel.add(btnGoTicketing);
-        panel.add(new JLabel("================ ³» ¿¹¸Å È®ÀÎÇÏ±â ================"));
-        panel.add(new JLabel("ÀÌ¸§  --------------  "));
+        panel.add(new JLabel("================ ë‚´ ì˜ˆë§¤ í™•ì¸í•˜ê¸° ================"));
+        panel.add(new JLabel("ì´ë¦„  --------------  "));
         panel.add(txtUserName);
         panel.add(btnMyTicketing);
         
         btnSearchMovie.addActionListener(new ActionListnerSearchMovie());
         btnMyTicketing.addActionListener(new ActionListnerMyTicketing());
+        btnGoTicketing.addActionListener(new ActionListenerExecuteTicketing());
         
         txtOut.setFocusable(false);
         
         add(panel);
 
-        setSize(330, 800); 
+        setSize(320, 800); 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -81,19 +82,19 @@ public class MemberPage extends JFrame{
         String Driver = "";
         String url = "jdbc:mysql://localhost:3306/madang?user=root&serverTimezone=Asia/Seoul&useSSL=false";
         String userid = "root";
-        String pwd = "0907";
+        String pwd = "sa192837";
 
         try {
            Class.forName("com.mysql.cj.jdbc.Driver");
-           System.out.println("µå¶óÀÌºê ·Îµå ¼º°ø");
+           System.out.println("ë“œë¼ì´ë¸Œ ë¡œë“œ ì„±ê³µ");
         } catch (ClassNotFoundException e) {
            e.printStackTrace();
         }
 
         try {
-           System.out.println("µå¶óÀÌºê ¿¬°á ÁØºñ...");
+           System.out.println("ë“œë¼ì´ë¸Œ ì—°ê²° ì¤€ë¹„...");
            connection = DriverManager.getConnection(url, userid, pwd);
-           System.out.println("µå¶óÀÌºê ¿¬°á ¼º°ø");
+           System.out.println("ë“œë¼ì´ë¸Œ ì—°ê²° ì„±ê³µ");
         } catch (SQLException e) {
            e.printStackTrace();
 
@@ -105,8 +106,6 @@ public class MemberPage extends JFrame{
 			setVisible(true);
 	        setSize(1000, 500);
 	        setLocationRelativeTo(null);
-	       
-	        
 		}
 	}
 	
@@ -137,74 +136,81 @@ public class MemberPage extends JFrame{
 			
 			
 			String sql = "select movie_name from movie where ";
+			String condition = "";
 			
 			if(!text1.equals("")) {
-				sql = sql+"movie_name = " + '\"' + text1 + '\"';
+				condition = condition + "movie_name = " + '\"' + text1 + '\"';
 				if(cnt>0) {
-					sql = sql+"AND ";
+					condition = condition+"AND ";
 					cnt--;
 				}
 			}
 			if(!text2.equals("")) {
-				sql = sql+"director_name = " + '\"' + text2 + '\"' ;
+				condition = condition +"director_name = " + '\"' + text2 + '\"' ;
 				if(cnt>0) {
-					sql = sql+"AND ";
+					condition = condition+"AND ";
 					cnt--;
 				}
 			}
 			
 			if(!text3.equals("")) {
-				sql = sql+"actor_name = " +'\"' + text3 + '\"';
+				condition = condition +"actor_name = " +'\"' + text3 + '\"';
 				if(cnt>0) {
-					sql = sql+"AND";
+					condition = condition+"AND";
 					cnt--;
 				}
 			}
 				
 			if(!text4.equals("")) {
-				sql = sql+"genre = " + '\"' + text4 + '\"';
+				condition = condition +"genre = " + '\"' + text4 + '\"';
 				if(cnt>0) {
-					sql = sql+"AND";
+					condition = condition+"AND";
 					cnt--;
 				}
 			}
-		
-			 pstmt = connection.prepareStatement(sql);
-			 System.out.println(sql);
+			String cnt_query = "select count(*) from movie where " + condition;
+			pstmt = connection.prepareStatement(cnt_query);
 			rs = pstmt.executeQuery();
-			txtOut.setText("");
+			rs.next();
+        
+			int count = rs.getInt(1);
+			pstmt = connection.prepareStatement(sql + condition);
+			System.out.println(sql);
+			rs = pstmt.executeQuery();
 			
 			txtOut.setText("");
-			while (rs.next())
+			
+			if (count == 0)
+				txtOut.setText("ê²€ìƒ‰ëœ ì˜í™”ê°€ ì—†ìŠµë‹ˆë‹¤.");
+			else
 			{
-				str = rs.getString(1);
-				System.out.println(str);	
-				txtOut.append(str);
-				txtOut.append(" / ");
-				
+				while (rs.next())
+				{
+					str = rs.getString(1);
+					System.out.println(str);	
+					txtOut.append(str);
+					txtOut.append(" / ");
+					
+				}	
 			}
-				// ¿¹¿Ü
-				
 			
 			}catch (Exception e9) {
-	        	  JOptionPane.showMessageDialog(null, "°Ë»öµÈ ¿µÈ­°¡ ¾ø½À´Ï´Ù.");
+	        	  JOptionPane.showMessageDialog(null, "ê°’ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.");
 	        	  System.out.print(e9);
 	        }
 			
 			txtOut.setVisible(true);
 	    }	
 	}
-	 	
-
 	
 	class ActionListnerMyTicketing implements ActionListener{
 		String userId = ""; 
 		JPanel subPanel = new JPanel();
 		JTextField txtTicketNumber = new JTextField(5);
-		JButton btnShowAll = new JButton("¿¹¸Å »ó¼¼");
-		JButton btnDelete = new JButton("µ¿ÀÏ ¿µÈ­ Á¤º¸");
-		JButton btnChangeMovie = new JButton("¿¹¸Å ¿µÈ­ º¯°æ");
-		JButton btnChangeTime = new JButton("»ó¿µ ÀÏÀÚ º¯°æ");
+		JButton btnShowAll = new JButton("ì˜ˆë§¤ ìƒì„¸");
+		JButton btnDelete = new JButton("ë™ì¼ ì˜í™” ì •ë³´");
+		JButton btnChangeMovie = new JButton("ì˜ˆë§¤ ì˜í™” ë³€ê²½");
+		JButton btnChangeTime = new JButton("ìƒì˜ ì¼ì ë³€ê²½");
 		JTextArea movieList = new JTextArea();
 		@Override
 	    public void actionPerformed(ActionEvent e) {
@@ -226,14 +232,14 @@ public class MemberPage extends JFrame{
 				}
 				
 				if(userId.equals("")) {
-					JOptionPane.showMessageDialog(null, "ÀÌ¸§À» ÀÔ·ÂÇØÁÖ¼¼¿ä!");
+					JOptionPane.showMessageDialog(null, "ì´ë¦„ì„ ì…ë ¥í•´ì£¼ì„¸ìš”!");
 					return;
 				}
 				
 			}
 			catch(Exception e1){
-				JOptionPane.showMessageDialog(null, "ÇØ´çÇÏ´Â »ç¿ëÀÚ ÀÌ¸§ÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù!");
-				System.out.println("½ÇÆĞ ÀÌÀ¯ : ");
+				JOptionPane.showMessageDialog(null, "í•´ë‹¹í•˜ëŠ” ì‚¬ìš©ì ì´ë¦„ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!");
+				System.out.println("ì‹¤íŒ¨ ì´ìœ  : ");
 			      System.out.println(e1.getMessage());
 			}
 			
@@ -241,7 +247,7 @@ public class MemberPage extends JFrame{
 			
 			new subFrame().add(subPanel).setVisible(true);
 			
-			subPanel.add(new JLabel("Æ¼ÄÏ¹øÈ£"));
+			subPanel.add(new JLabel("í‹°ì¼“ë²ˆí˜¸"));
 			subPanel.add(txtTicketNumber);
 			subPanel.add(btnShowAll);
 			subPanel.add(btnDelete);
@@ -256,14 +262,14 @@ public class MemberPage extends JFrame{
 			btnShowAll.addActionListener(new ActionListnerShowAll());
 			btnDelete.addActionListener(new ActionListnerDelete());
 			btnChangeMovie.addActionListener(new ActionListnerChangeMovie());
-			btnChangeTime.addActionListener(new ActionListnerChangeTime());
+			btnChangeTime.addActionListener(new ActionListenerExecuteTicketing());
 		}
 		
 		void makeMyTicketList() {
 			
 			try {
 		         movieList.setText("");
-		         movieList.append("\n" + "Æ¼ÄÏ¹øÈ£" + "\t" +"¿µÈ­¸í" + "\t" + "»ó¿µÀÏ" + "\t" + "»ó¿µ°ü¹øÈ£" + "\t" + "ÁÂ¼®¹øÈ£" + "\t" + "ÆÇ¸Å°¡°İ " + "\n");
+		         movieList.append("\n" + "í‹°ì¼“ë²ˆí˜¸" + "\t" +"ì˜í™”ëª…" + "\t" + "ìƒì˜ì¼" + "\t" + "ìƒì˜ê´€ë²ˆí˜¸" + "\t" + "ì¢Œì„ë²ˆí˜¸" + "\t" + "íŒë§¤ê°€ê²© " + "\n");
 	  
 		         String sql = "select ticket.tichet_number, movie.movie_name, sched.screening_start_date, ticket.theater_number, ticket.seat_number, book.payment_amount\r\n"
 		         		+ "from booking_info as book\r\n"
@@ -290,7 +296,7 @@ public class MemberPage extends JFrame{
 		         
 		         
 		      }catch (Exception e2) {
-		         System.out.println("½ÇÆĞ ÀÌÀ¯ : ");
+		         System.out.println("ì‹¤íŒ¨ ì´ìœ  : ");
 		         System.out.println(e2.getMessage());
 		      }
 		}
@@ -306,8 +312,8 @@ public class MemberPage extends JFrame{
 				subPanel.add(output);
 				try {
 					output.setText("");
-					output.append("\n" + "»ó¿µ½ÃÀÛ³¯Â¥" + "\t" +"»ó¿µ¿äÀÏ" + "\t" + "»ó¿µÈ½¼ö" + "\t" + "»ó¿µ½ÃÀÛ½Ã°£" + "\t" + "»ó¿µ¹øÈ£" + "\t" + "ÁÂ¼®¹øÈ£" + "\t"
-					+ "ÁÂ¼®¼ö" + "\t" + "¹ß±Ç¿©ºÎ " +"\t" + "Ç¥ÁØ°¡°İ "+"\t" + "ÆÇ¸Å°¡°İ " + "\n");
+					output.append("\n" + "ìƒì˜ì‹œì‘ë‚ ì§œ" + "\t" +"ìƒì˜ìš”ì¼" + "\t" + "ìƒì˜íšŸìˆ˜" + "\t" + "ìƒì˜ì‹œì‘ì‹œê°„" + "\t" + "ìƒì˜ë²ˆí˜¸" + "\t" + "ì¢Œì„ë²ˆí˜¸" + "\t"
+					+ "ì¢Œì„ìˆ˜" + "\t" + "ë°œê¶Œì—¬ë¶€ " +"\t" + "í‘œì¤€ê°€ê²© "+"\t" + "íŒë§¤ê°€ê²© " + "\n");
 					
 					String sql = "select sched.screening_start_date, sched.screening_day, sched.screening_count, sched.screening_start_time,\r\n"
 							+ "ticket.screening_schedule_number, ticket.seat_number, theaters.seat_count, ticket.ticketing_status, ticket.standard_price, ticket.selling_price\r\n"
@@ -330,7 +336,7 @@ public class MemberPage extends JFrame{
 				            output.append(str);
 				         }
 				}catch(Exception e3){
-					System.out.println("½ÇÆĞ ÀÌÀ¯ : ");
+					System.out.println("ì‹¤íŒ¨ ì´ìœ  : ");
 			         System.out.println(e3.getMessage());
 				}
 				
@@ -365,8 +371,96 @@ public class MemberPage extends JFrame{
 		}
 		
 	}
-}
+	
+	class ActionListenerExecuteTicketing implements ActionListener {
+		
+		private void bookTicket(int movie_number, String movie_name) {
+			try {
+				String query = "SELECT * FROM screening_schedule WHERE movie_number=" + Integer.toString(movie_number);
+				
+				pstmt = connection.prepareStatement(query);
+				rs = pstmt.executeQuery();
+				System.out.println(query);
+				rs.next();
+				
+				int screening_schedule_number = rs.getInt(1);
+				int theater_number = rs.getInt(3);
+				
+				query = "SELECT COUNT(*) FROM seat WHERE theater_number=" + Integer.toString(theater_number) + " AND seat_use_status=\"x\"";
+				pstmt = connection.prepareStatement(query);
+				rs = pstmt.executeQuery();
+				System.out.println(query);
+				rs.next();
+				
+				if (rs.getInt(1) == 0) {
+					JOptionPane.showMessageDialog(null, "ë‚¨ì€ ì¢Œì„ì´ ì—†ìŠµë‹ˆë‹¤.");
+					return ;
+				}
+				
+				query = "SELECT * FROM seat WHERE theater_number=" + Integer.toString(theater_number) + " AND seat_use_status=\"x\"";
+				pstmt = connection.prepareStatement(query);
+				rs = pstmt.executeQuery();
+				System.out.println(query);
+				rs.next();
+				
+				int seat_number = rs.getInt(1);
+			
+				pstmt.executeUpdate("INSERT INTO booking_info (payment_method, payment_status, payment_amount, user_id, payment_date) VALUES (\"ë¬´í†µì¥ì…ê¸ˆ\", \"ì •ìƒ\", \"10000\", \"newid1\", CURDATE());");
+				
+				query = "SELECT * FROM booking_info ORDER BY booking_number DESC LIMIT 1";
+				pstmt = connection.prepareStatement(query);
+				rs = pstmt.executeQuery();
+				System.out.println(query);
+				rs.next();
+				int booking_number = rs.getInt(1);
+				
+	
+				pstmt.executeUpdate(String.format("INSERT INTO ticket (screening_schedule_number, theater_number, seat_number, booking_number, ticketing_status, standard_price, selling_price) VALUES(%d, %d, %d, %d, \"o\", 14000, 10000)", screening_schedule_number, theater_number, seat_number, booking_number));
+				
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+			
+		}
+		
+		@Override
+	    public void actionPerformed(ActionEvent e) {
+			try {
+				String search = txtInput.getText();
+				if (!search.isEmpty()) {
+					
+					String cnt_query = "SELECT COUNT(*) FROM movie WHERE movie_name=\"" + search + "\"";
+					pstmt = connection.prepareStatement(cnt_query);
+					rs = pstmt.executeQuery();
+					rs.next();
+					int count = rs.getInt(1);
+					
+					if (count == 0)
+						JOptionPane.showMessageDialog(null, "ì˜í™”ëª…ì„ í™•ì¸í•´ì£¼ì„¸ìš”.");
+					else if (count > 1)
+						JOptionPane.showMessageDialog(null, "ê²€ìƒ‰ëœ ì˜í™”ê°€ 1ê°œ ì´ìƒì…ë‹ˆë‹¤.");
+					else
+					{
+						String query = "SELECT * FROM movie WHERE movie_name=\"" + search + "\"";
+						pstmt = connection.prepareStatement(query);
+						System.out.println(query);
+						rs = pstmt.executeQuery();
+						rs.next();
+						bookTicket(rs.getInt(1), rs.getString(2));
+					}
+						
+				}
+				else
+		        	  JOptionPane.showMessageDialog(null, "ê°’ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.");
+			}
+			catch (Exception error) {
+				System.out.print(error);	
+			}
+		}
+	}
 
+	
+}
 
 
 
