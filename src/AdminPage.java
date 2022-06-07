@@ -119,7 +119,7 @@ public class AdminPage extends JFrame  implements ActionListener{
          String Driver = "";
          String url = "jdbc:mysql://localhost:3306/madang?user=root&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true";
          String userid = "root";
-         String pwd = "0907";
+         String pwd = "sa192837";
 
          try {
             Class.forName("com.mysql.cj.jdbc.Driver");
