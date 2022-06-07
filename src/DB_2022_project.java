@@ -63,7 +63,7 @@ public class DB_2022_project extends JFrame{
 	
 	public void connect() {
 		String Driver="";
-		String url="jdbc:mysql://localhost:3306/?user=root&serverTimezone=Asia/Seoul&useSSL=false";
+		String url="jdbc:mysql://localhost:3306/madang?user=root&serverTimezone=Asia/Seoul&useSSL=false";
 		String userid="root";
 		String pwd = "0907";
 		

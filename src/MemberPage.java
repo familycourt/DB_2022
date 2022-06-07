@@ -55,7 +55,7 @@ public class MemberPage extends JFrame{
         panel.add(btnSearchMovie);
         panel.add(new JLabel("================ 조회한 영화 목록 ================"));
         panel.add(txtOut);
-        panel.add(new JLabel("------------------ 영화 예매 ------------------"));
+        panel.add(new JLabel("------------------------- 영화 예매 -------------------------"));
         panel.add(new JLabel("영화 제목을 입력하세요"));
         panel.add(txtInput);
         panel.add(btnGoTicketing);
@@ -66,6 +66,7 @@ public class MemberPage extends JFrame{
         
         btnSearchMovie.addActionListener(new ActionListnerSearchMovie());
         btnMyTicketing.addActionListener(new ActionListnerMyTicketing());
+        btnGoTicketing.addActionListener(new ActionListenerExecuteTicketing());
         
         txtOut.setFocusable(false);
         
@@ -136,9 +137,11 @@ public class MemberPage extends JFrame{
 			cnt--;
 			
 			
-			String sql = "select movie_name from movie where ";
 			
-			if(!text1.equals("")) {
+			String sql = "select movie_name from movie where ";
+	        String condition = "";
+			
+	        if(!text1.equals("")) {
 				sql = sql+"movie_name = " + '\"' + text1 + '\"';
 				if(cnt>0) {
 					sql = sql+"AND ";
@@ -169,12 +172,11 @@ public class MemberPage extends JFrame{
 				}
 			}
 		
-			 pstmt = connection.prepareStatement(sql);
+			pstmt = connection.prepareStatement(sql);
 			 System.out.println(sql);
 			rs = pstmt.executeQuery();
 			txtOut.setText("");
 			
-			txtOut.setText("");
 			while (rs.next())
 			{
 				str = rs.getString(1);
@@ -183,19 +185,104 @@ public class MemberPage extends JFrame{
 				txtOut.append(" / ");
 				
 			}
-				// 예외
-				
-			
 			}catch (Exception e9) {
 	        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
 	        	  System.out.print(e9);
 	        }
 			
+			if(txtOut.getText().equals(""))
+				JOptionPane.showMessageDialog(null, "검색된 결과가 없습니다.");
 			txtOut.setVisible(true);
 	    }	
 	}
 	 	
-
+	class ActionListenerExecuteTicketing implements ActionListener {
+	      
+	      private void bookTicket(int movie_number, String movie_name) {
+	         try {
+	            String query = "SELECT * FROM screening_schedule WHERE movie_number=" + Integer.toString(movie_number);
+	            
+	            pstmt = connection.prepareStatement(query);
+	            rs = pstmt.executeQuery();
+	            System.out.println(query);
+	            rs.next();
+	            
+	            int screening_schedule_number = rs.getInt(1);
+	            int theater_number = rs.getInt(3);
+	            
+	            query = "SELECT COUNT(*) FROM seat WHERE theater_number=" + Integer.toString(theater_number) + " AND seat_use_status=\"x\"";
+	            pstmt = connection.prepareStatement(query);
+	            rs = pstmt.executeQuery();
+	            System.out.println(query);
+	            rs.next();
+	            
+	            if (rs.getInt(1) == 0) {
+	               JOptionPane.showMessageDialog(null, "남은 좌석이 없습니다.");
+	               return ;
+	            }
+	            
+	            query = "SELECT * FROM seat WHERE theater_number=" + Integer.toString(theater_number) + " AND seat_use_status=\"x\"";
+	            pstmt = connection.prepareStatement(query);
+	            rs = pstmt.executeQuery();
+	            System.out.println(query);
+	            rs.next();
+	            
+	            int seat_number = rs.getInt(1);
+	         
+	            pstmt.executeUpdate("INSERT INTO booking_info (payment_method, payment_status, payment_amount, user_id, payment_date) VALUES (\"무통장입금\", \"정상\", \"10000\", \"newid1\", CURDATE());");
+	            
+	            query = "SELECT * FROM booking_info ORDER BY booking_number DESC LIMIT 1";
+	            pstmt = connection.prepareStatement(query);
+	            rs = pstmt.executeQuery();
+	            System.out.println(query);
+	            rs.next();
+	            int booking_number = rs.getInt(1);
+	            
+	   
+	            pstmt.executeUpdate(String.format("INSERT INTO ticket (screening_schedule_number, theater_number, seat_number, booking_number, ticketing_status, standard_price, selling_price) VALUES(%d, %d, %d, %d, \"o\", 14000, 10000)", screening_schedule_number, theater_number, seat_number, booking_number));
+	            
+	            JOptionPane.showMessageDialog(null, "예매 성공했습니다!");
+	         } catch (Exception e) {
+	            System.out.println(e);
+	         }
+	         
+	      }
+	      
+	      @Override
+	       public void actionPerformed(ActionEvent e) {
+	         try {
+	            String search = txtInput.getText();
+	            if (!search.isEmpty()) {
+	               
+	               String cnt_query = "SELECT COUNT(*) FROM movie WHERE movie_name=\"" + search + "\"";
+	               pstmt = connection.prepareStatement(cnt_query);
+	               rs = pstmt.executeQuery();
+	               rs.next();
+	               int count = rs.getInt(1);
+	               
+	               if (count == 0)
+	                  JOptionPane.showMessageDialog(null, "영화명을 확인해주세요.");
+	               else if (count > 1)
+	                  JOptionPane.showMessageDialog(null, "검색된 영화가 1개 이상입니다.");
+	               else
+	               {
+	                  String query = "SELECT * FROM movie WHERE movie_name=\"" + search + "\"";
+	                  pstmt = connection.prepareStatement(query);
+	                  System.out.println(query);
+	                  rs = pstmt.executeQuery();
+	                  rs.next();
+	                  bookTicket(rs.getInt(1), rs.getString(2));
+	               }
+	                  
+	            }
+	            else
+	                   JOptionPane.showMessageDialog(null, "값을 입력해주세요.");
+	         }
+	         catch (Exception error) {
+	            System.out.print(error);   
+	         }
+	      }
+	   }
 	
 	class ActionListnerMyTicketing implements ActionListener{
 		String userId = ""; 
@@ -294,6 +381,8 @@ public class MemberPage extends JFrame{
 		         System.out.println(e2.getMessage());
 		      }
 		}
+		
+		
 		
 		class ActionListnerShowAll implements ActionListener{
 			
