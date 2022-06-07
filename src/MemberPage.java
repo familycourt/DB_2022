@@ -103,8 +103,6 @@ public class MemberPage extends JFrame{
 			setVisible(true);
 	        setSize(1200, 800);
 	        setLocationRelativeTo(null);
-	       
-	        
 		}
 	}
 	

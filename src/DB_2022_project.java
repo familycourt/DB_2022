@@ -56,8 +56,6 @@ public class DB_2022_project extends JFrame{
 	public static void main(String[] args) {
 		new DB_2022_project();
 	}
-	
-	
 }
 
 
