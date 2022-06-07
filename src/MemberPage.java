@@ -28,39 +28,34 @@ public class MemberPage extends JFrame{
 	JTextArea txtOut = new JTextArea();
 	JButton btnGoTicketing = new JButton("영화 바로 예매하기");
 	
-	JTextField txtSearchMovie = new  JTextField(" 영화 이름을 입력해주세요 ");
-    JTextField txtSearchDirector = new  JTextField(" 감독 이름을 입력해주세요 ");
-    JTextField txtSearchActor = new  JTextField(" 배우 이름을 입력해주세요 ");
-    JTextField txtSearchGenre = new  JTextField("     장르를 입력해주세요     ");
+	JTextField txtSearchMovie = new  JTextField(10);
+    JTextField txtSearchDirector = new  JTextField(10);
+    JTextField txtSearchActor = new  JTextField(10);
+    JTextField txtSearchGenre = new  JTextField(10);
     
 	MemberPage(){
 		super("멤버 화면"); //타이틀
 		connect();
 		
         JPanel panel = new JPanel();
-        JButton btnSearchMovie = new JButton("조회");
-        JButton btnSearchDirector = new JButton("조회");
-        JButton btnSearchActor = new JButton("조회");
-        JButton btnSearchGenre = new JButton("조회");
+        JButton btnSearchMovie = new JButton("                 조  회                 ");
         JButton btnMyTicketing = new JButton("               예매 확인               ");
         
-        panel.add(new JLabel("               영화 검색               "));
+        panel.add(new JLabel("================== 영화 검색 =================="));
+        panel.add(new JLabel("영화 이름 ------------"));
         panel.add(txtSearchMovie);
-        panel.add(btnSearchMovie);
+        panel.add(new JLabel("감독 이름 ------------"));
         panel.add(txtSearchDirector);
-        panel.add(btnSearchDirector);
+        panel.add(new JLabel("배우 이름 -------------"));
         panel.add(txtSearchActor);
-        panel.add(btnSearchActor);
+        panel.add(new JLabel("장르 이름 -------------"));
         panel.add(txtSearchGenre);
-        panel.add(btnSearchGenre);
+        panel.add(btnSearchMovie);
         panel.add(btnGoTicketing);
         panel.add(txtOut);
         panel.add(btnMyTicketing);
         
         btnSearchMovie.addActionListener(new ActionListnerSearchMovie());
-        btnSearchDirector.addActionListener(new ActionListnerSearchDirector());
-        btnSearchActor.addActionListener(new ActionListnerSearchActor());
-        btnSearchGenre.addActionListener(new ActionListnerSearchGenre());
         btnMyTicketing.addActionListener(new ActionListnerMyTicketing());
         
         txtOut.setVisible(false);
@@ -113,15 +108,61 @@ public class MemberPage extends JFrame{
 		@Override
 	    public void actionPerformed(ActionEvent e) {
 			try {
-			String text = txtSearchMovie.getText();
+			String text1 = txtSearchMovie.getText();
+			String text2 = txtSearchDirector.getText();
+			String text3 = txtSearchActor.getText();
+			String text4 = txtSearchGenre.getText();
 			
 			String str="";
-			String sql = "select movie_name from movie where movie_name=?;";
-	        
-			pstmt = connection.prepareStatement(sql);
 			
-			pstmt.setString(1, text);
+			int cnt =0;
 			
+			if(!text1.equals(""))
+				cnt++;
+			if(!text2.equals(""))
+				cnt++;
+			if(!text3.equals(""))
+				cnt++;
+			if(!text4.equals(""))
+				cnt++;
+			cnt--;
+			
+			
+			String sql = "select movie_name from movie where";
+			
+			if(!text1.equals("")) {
+				sql = sql+"movie_name = " + text1;
+				if(cnt>0) {
+					sql = sql+"AND";
+					cnt--;
+				}
+			}
+			if(text2.equals("")) {
+				sql = sql+"director_name = " +text2;
+				if(cnt>0) {
+					sql = sql+"AND";
+					cnt--;
+				}
+			}
+			
+			if(text3.equals("")) {
+				sql = sql+"actor_name = " +text3;
+				if(cnt>0) {
+					sql = sql+"AND";
+					cnt--;
+				}
+			}
+				
+			if(text4.equals("")) {
+				sql = sql+"genre = " + text4;
+				if(cnt>0) {
+					sql = sql+"AND";
+					cnt--;
+				}
+			}
+		
+			
+			System.out.println(sql);
 			rs = pstmt.executeQuery();
 
 			while (rs.next())
@@ -141,102 +182,7 @@ public class MemberPage extends JFrame{
 	    }	
 	}
 	
-	class ActionListnerSearchDirector implements ActionListener{
-			
-			@Override
-		    public void actionPerformed(ActionEvent e1) {
-				try {
-					String text = txtSearchDirector.getText();
-					
-					String str="";
-					String sql = "select movie_name from movie where director_name=?;";
-			        
-					pstmt = connection.prepareStatement(sql);
-					
-					pstmt.setString(1, text);
-					
-					rs = pstmt.executeQuery();
 
-					while (rs.next())
-					{
-						str = rs.getString(1);
-						System.out.println(str);				
-					}
-					
-					 txtOut.setText(str);
-					}catch (Exception e9) {
-			        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
-			        	  System.out.print(e9);
-			        }
-				txtOut.setVisible(true);
-		        btnGoTicketing.setVisible(true);
-		    }	
-		}
-	
-	class ActionListnerSearchActor implements ActionListener{
-		
-		@Override
-	    public void actionPerformed(ActionEvent e2) {
-			try {
-				String text = txtSearchMovie.getText();
-				
-				String str="";
-				String sql = "select movie_name from movie where actor_name=?;";
-		        
-				pstmt = connection.prepareStatement(sql);
-				
-				pstmt.setString(1, text);
-				
-				rs = pstmt.executeQuery();
-
-				while (rs.next())
-				{
-					str = rs.getString(1);
-					System.out.println(str);				
-				}
-				
-				 txtOut.setText(str);
-				}catch (Exception e9) {
-		        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
-		        	  System.out.print(e9);
-		        }
-			txtOut.setVisible(true);
-	        btnGoTicketing.setVisible(true);
-	    }	
-	}
-	
-	class ActionListnerSearchGenre implements ActionListener{
-		
-		@Override
-	    public void actionPerformed(ActionEvent e3) {
-			try {
-				String text = txtSearchMovie.getText();
-				
-				String str="";
-				String sql = "select movie_name from movie where genre=?;";
-		        
-				pstmt = connection.prepareStatement(sql);
-				
-				pstmt.setString(1, text);
-				
-				rs = pstmt.executeQuery();
-
-				while (rs.next())
-				{
-					str = rs.getString(1);
-					System.out.println(str);				
-				}
-				
-				 txtOut.setText(str);
-				}catch (Exception e9) {
-		        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
-		        	  System.out.print(e9);
-		        }
-			txtOut.setVisible(true);
-	        btnGoTicketing.setVisible(true);
-		
-	    }	
-	}
 	
 	class ActionListnerMyTicketing implements ActionListener{
 		JPanel subPanel = new JPanel();

@@ -796,9 +796,6 @@ public class AdminPage extends JFrame  implements ActionListener{
 
       @Override
         public void actionPerformed(ActionEvent e2) {
-         editPanel.setVisible(false);
-         inputPanel.setVisible(false);
-         resultPanel.setVisible(true);
          
          showDB();
         }   
@@ -970,7 +967,6 @@ public class AdminPage extends JFrame  implements ActionListener{
          tableBox.setEnabled(false);
          resultPanel.setVisible(false);
          inputPanel.setVisible(true);
-         editPanel.setVisible(false);
         }   
    }
    
