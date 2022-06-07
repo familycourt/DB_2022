@@ -103,7 +103,7 @@ public class MemberPage extends JFrame{
 	class subFrame extends JFrame	{
 		public subFrame(){
 			setVisible(true);
-	        setSize(700, 500);
+	        setSize(1000, 500);
 	        setLocationRelativeTo(null);
 	       
 	        
@@ -208,6 +208,8 @@ public class MemberPage extends JFrame{
 		JTextArea movieList = new JTextArea();
 		@Override
 	    public void actionPerformed(ActionEvent e) {
+			
+			
 			try{
 				
 				String sql = "select user_id from user where user_name= \"";
@@ -223,6 +225,11 @@ public class MemberPage extends JFrame{
 					
 				}
 				
+				if(userId.equals("")) {
+					JOptionPane.showMessageDialog(null, "이름을 입력해주세요!");
+					return;
+				}
+				
 			}
 			catch(Exception e1){
 				JOptionPane.showMessageDialog(null, "해당하는 사용자 이름이 존재하지 않습니다!");
@@ -231,8 +238,6 @@ public class MemberPage extends JFrame{
 			}
 			
 			
-			if(userId.equals(""))
-				return;
 			
 			new subFrame().add(subPanel).setVisible(true);
 			
@@ -274,12 +279,15 @@ public class MemberPage extends JFrame{
 		         stmt = connection.createStatement();
 		         rs = stmt.executeQuery(sql);
 		         
+		        
+		         
 		         while (rs.next()) {
 		            String str = rs.getInt(1) + "\t" + rs.getString(2) + "\t" + rs.getDate(3) + "\t" + rs.getInt(4) 
 		            + "\t" + rs.getInt(5) + "\t" + rs.getInt(6) + "\n";
 		            System.out.println(str);
 		            movieList.append(str);
 		         }
+		         
 		         
 		      }catch (Exception e2) {
 		         System.out.println("실패 이유 : ");
@@ -291,8 +299,41 @@ public class MemberPage extends JFrame{
 			
 			@Override
 		    public void actionPerformed(ActionEvent e5) {
-				new subFrame();
-			
+				JPanel subPanel = new JPanel();
+				new subFrame().add(subPanel);
+				subPanel.setVisible(true);
+				JTextArea output = new JTextArea();
+				subPanel.add(output);
+				try {
+					output.setText("");
+					output.append("\n" + "상영시작날짜" + "\t" +"상영요일" + "\t" + "상영횟수" + "\t" + "상영시작시간" + "\t" + "상영번호" + "\t" + "좌석번호" + "\t"
+					+ "좌석수" + "\t" + "발권여부 " +"\t" + "표준가격 "+"\t" + "판매가격 " + "\n");
+					
+					String sql = "select sched.screening_start_date, sched.screening_day, sched.screening_count, sched.screening_start_time,\r\n"
+							+ "ticket.screening_schedule_number, ticket.seat_number, theaters.seat_count, ticket.ticketing_status, ticket.standard_price, ticket.selling_price\r\n"
+							+ "from ticket\r\n"
+							+ "left join screening_schedule as sched\r\n"
+							+ "on ticket.screening_schedule_number = sched.screening_schedule_number\r\n"
+							+ "left join theaters\r\n"
+							+ "on ticket.theater_number = theaters.theater_number\r\n"
+							+ "where ticket.tichet_number= ";
+					sql = sql + txtTicketNumber.getText()  + ";";
+					
+					System.out.println(sql);
+			         stmt = connection.createStatement();
+			         rs = stmt.executeQuery(sql);
+			         
+			         while (rs.next()) {
+				            String str = rs.getDate(1) + "\t" + rs.getString(2) + "\t" + rs.getInt(3) + "\t" + rs.getTime(4) + "\t" + rs.getInt(5) 
+				            + "\t" + rs.getInt(6) + "\t" + rs.getInt(7) + "\t" + rs.getString(8)+  "\t" + rs.getInt(9) + "\t" + rs.getInt(10) + "\n";
+				            System.out.println(str);
+				            output.append(str);
+				         }
+				}catch(Exception e3){
+					System.out.println("실패 이유 : ");
+			         System.out.println(e3.getMessage());
+				}
+				
 		    }	
 		}
 		
