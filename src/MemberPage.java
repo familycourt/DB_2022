@@ -25,8 +25,9 @@ public class MemberPage extends JFrame{
 
     PreparedStatement pstmt;
 	
-	JTextArea txtOut = new JTextArea();
-	JButton btnGoTicketing = new JButton("영화 바로 예매하기");
+	JTextArea txtOut = new JTextArea("조회한 영화가 없습니다.");
+	JTextField txtInput = new JTextField(10);
+	JButton btnGoTicketing = new JButton("예매하기");
 	
 	JTextField txtSearchMovie = new  JTextField(10);
     JTextField txtSearchDirector = new  JTextField(10);
@@ -51,8 +52,11 @@ public class MemberPage extends JFrame{
         panel.add(new JLabel("장르 이름 -------------"));
         panel.add(txtSearchGenre);
         panel.add(btnSearchMovie);
-        panel.add(new JLabel("================== 영화 예매 =================="));
+        panel.add(new JLabel("================ 조회한 영화 목록 ================"));
         panel.add(txtOut);
+        panel.add(new JLabel("------------------ 영화 예매 ------------------"));
+        panel.add(new JLabel("영화 제목을 입력하세요"));
+        panel.add(txtInput);
         panel.add(btnGoTicketing);
         panel.add(new JLabel("================ 내 예매 확인하기 ================"));
         panel.add(btnMyTicketing);
@@ -60,12 +64,11 @@ public class MemberPage extends JFrame{
         btnSearchMovie.addActionListener(new ActionListnerSearchMovie());
         btnMyTicketing.addActionListener(new ActionListnerMyTicketing());
         
-        txtOut.setVisible(false);
-        btnGoTicketing.setVisible(false);
+        txtOut.setFocusable(false);
         
         add(panel);
 
-        setSize(300, 300); 
+        setSize(300, 800); 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -166,20 +169,31 @@ public class MemberPage extends JFrame{
 			 pstmt = connection.prepareStatement(sql);
 			 System.out.println(sql);
 			rs = pstmt.executeQuery();
+			txtOut.setText("");
+			
+			txtOut.setText("");
 			while (rs.next())
 			{
 				str = rs.getString(1);
-				System.out.println(str);				
+				System.out.println(str);	
+				txtOut.append(str);
+				txtOut.append(" / ");
+				
 			}
 			
-			 txtOut.setText(str);
+			System.out.println(txtOut);
+			
+			if(txtOut.equals("")) {
+				txtOut.setText("검색된 영화가 없습니다.");
+			}
+				
+			
 			}catch (Exception e9) {
 	        	  JOptionPane.showMessageDialog(null, "검색된 영화가 없습니다.");
 	        	  System.out.print(e9);
 	        }
 			
 			txtOut.setVisible(true);
-	        btnGoTicketing.setVisible(true);
 	    }	
 	}
 	
