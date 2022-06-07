@@ -51,8 +51,10 @@ public class MemberPage extends JFrame{
         panel.add(new JLabel("장르 이름 -------------"));
         panel.add(txtSearchGenre);
         panel.add(btnSearchMovie);
-        panel.add(btnGoTicketing);
+        panel.add(new JLabel("================== 영화 예매 =================="));
         panel.add(txtOut);
+        panel.add(btnGoTicketing);
+        panel.add(new JLabel("================ 내 예매 확인하기 ================"));
         panel.add(btnMyTicketing);
         
         btnSearchMovie.addActionListener(new ActionListnerSearchMovie());

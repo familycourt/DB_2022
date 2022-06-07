@@ -151,8 +151,9 @@ public class AdminPage extends JFrame  implements ActionListener{
             
             // madang 초기화
             System.out.println("madang 초기화");
-            stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`screening_schedule`;");
+
             stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`ticket`;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`screening_schedule`;");
             stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`seat`;");
             stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`movie`;");
             stmt.executeUpdate("DROP TABLE IF EXISTS `madang`.`theaters`;");
@@ -226,43 +227,16 @@ public class AdminPage extends JFrame  implements ActionListener{
                   "  `theater_number` INT(11) NOT NULL,\r\n" + 
                   "  `seat_use_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
                  // "  CONSTRAINT pk_seat`\r\n" + 
-                  "  PRIMARY KEY (`seat_number`))" );
-//                  "  CONSTRAINT `fk_theaters_theater_number`\r\n" + 
-//                  "    FOREIGN KEY (`theater_number`)\r\n" + 
-//                  "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
-//                  "    ON DELETE NO ACTION\r\n" + 
-//                  "    ON UPDATE NO ACTION)"); 
+                  "  PRIMARY KEY (`seat_number`),\r\n " +
+                  "  CONSTRAINT `fk_theaters_theater_number_seat`\r\n" + 
+                  "    FOREIGN KEY (`theater_number`)\r\n" + 
+                  "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
+                  "    ON DELETE CASCADE\r\n" + 
+                  "    ON UPDATE NO ACTION)"); 
             
             
             System.out.println("Table `madang`.`seat` CREATE 완료");
-            
-            // Table `madang`.`ticket`
-
-            // 여기
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`ticket` (\r\n" + 
-                  "  `tichet_number` INT(11) NOT NULL,\r\n" + 
-                  "  `screenig_schedule_number` INT(11) NOT NULL,\r\n" + 
-                  "  `theater_number` INT(11) NOT NULL,\r\n" + 
-                  "  `seat_number` INT(11) NULL DEFAULT NULL,\r\n" + // 키 설정 필요    
-                  "  `booking_number` INT(11) NOT NULL,\r\n" + 
-                  "  `ticketing_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
-                  "  `standard_price` INT(11) NULL DEFAULT NULL,\r\n" + 
-                  "  `selling_price` INT(11) NULL DEFAULT NULL,\r\n" + 
-                  "  PRIMARY KEY (`tichet_number`),\r\n" +
-                  "  CONSTRAINT `fk_theaters_theater_number_ticket`\r\n" + 
-                  "    FOREIGN KEY (`theater_number`)\r\n" + 
-                  "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
-                  "    ON DELETE CASCADE\r\n" +
-                  "    ON UPDATE NO ACTION,\r\n" + 
-                  "  CONSTRAINT `fk_seat_seat_number`\r\n" + 
-                  "    FOREIGN KEY (`seat_number`)\r\n" + 
-                  "    REFERENCES `madang`.`seat` (`seat_number`)\r\n" + 
-                  "    ON DELETE CASCADE\r\n" +
-                  "    ON UPDATE NO ACTION)");
-                  
-            
-            
-            System.out.println("Table `madang`.`ticket` CREATE 완료");
+           
             
            
             
@@ -295,6 +269,44 @@ public class AdminPage extends JFrame  implements ActionListener{
                   "    ON UPDATE NO ACTION)"); 
             
             System.out.println("Table `madang`.`booking_info` CREATE 완료");
+            
+            // Table `madang`.`ticket`
+
+            // 여기
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`ticket` (\r\n" + 
+                  "  `tichet_number` INT(11) NOT NULL,\r\n" + 
+                  "  `screening_schedule_number` INT(11) NOT NULL,\r\n" + 
+                  "  `theater_number` INT(11) NOT NULL,\r\n" + 
+                  "  `seat_number` INT(11) NULL DEFAULT NULL,\r\n" + // 키 설정 필요    
+                  "  `booking_number` INT(11) NOT NULL,\r\n" + 
+                  "  `ticketing_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
+                  "  `standard_price` INT(11) NULL DEFAULT NULL,\r\n" + 
+                  "  `selling_price` INT(11) NULL DEFAULT NULL,\r\n" + 
+                  "  PRIMARY KEY (`tichet_number`),\r\n" +
+                  "  CONSTRAINT `fk_screening_schedule_screenig_schedule_number`\r\n" + 
+                  "    FOREIGN KEY (`screening_schedule_number`)\r\n" + 
+                  "    REFERENCES `madang`.`screening_schedule` (`screening_schedule_number`)\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
+                  "    ON UPDATE NO ACTION,\r\n" +
+                  "  CONSTRAINT `fk_theaters_theater_number_ticket`\r\n" + 
+                  "    FOREIGN KEY (`theater_number`)\r\n" + 
+                  "    REFERENCES `madang`.`theaters` (`theater_number`)\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
+                  "    ON UPDATE NO ACTION,\r\n" +
+                  "  CONSTRAINT `fk_booking_info_booking_number`\r\n" + 
+                  "    FOREIGN KEY (`booking_number`)\r\n" + 
+                  "    REFERENCES `madang`.`booking_info` (`booking_number`)\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
+                  "    ON UPDATE NO ACTION,\r\n" +
+                  "  CONSTRAINT `fk_seat_seat_number`\r\n" + 
+                  "    FOREIGN KEY (`seat_number`)\r\n" + 
+                  "    REFERENCES `madang`.`seat` (`seat_number`)\r\n" + 
+                  "    ON DELETE CASCADE\r\n" +
+                  "    ON UPDATE NO ACTION)");
+                  
+            
+            
+            System.out.println("Table `madang`.`ticket` CREATE 완료");
             
             // INSERT INTO movie
             System.out.println("INSERT INTO movie");   // 개봉일정 수정필요  
@@ -359,32 +371,6 @@ public class AdminPage extends JFrame  implements ActionListener{
             stmt.executeUpdate("INSERT INTO seat VALUES(19, 10, 'o');");
             stmt.executeUpdate("INSERT INTO seat VALUES(20, 10, 'o');");
             
-            // INSERT INTO ticket
-            System.out.println("INSERT INTO ticket");   
-            stmt.executeUpdate("INSERT INTO ticket VALUES(1, 1, 1, 1, 1, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(2, 1, 1, 2, 2, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(3, 2, 2, 3, 3, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(4, 2, 2, 4, 4, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(5, 3, 3, 5, 5, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(6, 3, 3, 6, 6, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(7, 4, 4, 7, 7, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(8, 4, 4, 8, 8, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(9, 5, 5, 9, 9, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(10, 5, 5, 10, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(11, 6, 5, 11, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(12, 6, 5, 12, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(13, 7, 5, 13, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(14, 7, 5, 14, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(15, 8, 5, 15, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(16, 8, 5, 16, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(17, 9, 5, 17, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(18, 9, 5, 18, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(19, 10, 5, 19, 10, 'x', '14000', '10000');");
-            stmt.executeUpdate("INSERT INTO ticket VALUES(20, 10, 5, 20, 10, 'x', '14000', '10000');");
-            
-            
-            
-
             // INSERT INTO user
             System.out.println("INSERT INTO user");   
             stmt.executeUpdate("INSERT INTO user VALUES('newid1', '홍길동', '010-0001-0001', 'email1@naver.com');");
@@ -411,6 +397,34 @@ public class AdminPage extends JFrame  implements ActionListener{
             stmt.executeUpdate("INSERT INTO booking_info VALUES(9, '무통장입금', '정상', '7000', 'newid9', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
             stmt.executeUpdate("INSERT INTO booking_info VALUES(10, '무통장입금', '정상', '7000', 'newid10', STR_TO_DATE('2022-05-04','%Y-%m-%d'));");
             
+            
+            // INSERT INTO ticket
+            System.out.println("INSERT INTO ticket");   
+            stmt.executeUpdate("INSERT INTO ticket VALUES(1, 1, 1, 1, 1, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(2, 1, 1, 2, 2, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(3, 2, 2, 3, 3, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(4, 2, 2, 4, 4, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(5, 3, 3, 5, 5, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(6, 3, 3, 6, 6, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(7, 4, 4, 7, 7, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(8, 4, 4, 8, 8, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(9, 5, 5, 9, 9, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(10, 5, 5, 10, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(11, 6, 5, 11, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(12, 6, 5, 12, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(13, 7, 5, 13, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(14, 7, 5, 14, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(15, 8, 5, 15, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(16, 8, 5, 16, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(17, 9, 5, 17, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(18, 9, 5, 18, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(19, 10, 5, 19, 10, 'x', '14000', '10000');");
+            stmt.executeUpdate("INSERT INTO ticket VALUES(20, 10, 5, 20, 10, 'x', '14000', '10000');");
+            
+            
+            
+
+
             
             System.out.println("Table 초기화 종료");   
          }catch(SQLException e10){
