@@ -352,8 +352,9 @@ public class MemberPage extends JFrame{
 				else
 		        	  JOptionPane.showMessageDialog(null, "값을 입력해주세요.");
 			}
-			catch (Exception error)
-				 System.out.print(error);
+			catch (Exception error) {
+				System.out.print(error);	
+			}
 		}
 	}
 
