@@ -114,7 +114,7 @@ public class MemberPage extends JFrame{
 			String text4 = txtSearchGenre.getText();
 			
 			String str="";
-			
+		
 			int cnt =0;
 			
 			if(!text1.equals(""))
@@ -128,43 +128,42 @@ public class MemberPage extends JFrame{
 			cnt--;
 			
 			
-			String sql = "select movie_name from movie where";
+			String sql = "select movie_name from movie where ";
 			
 			if(!text1.equals("")) {
-				sql = sql+"movie_name = " + text1;
+				sql = sql+"movie_name = " + '\"' + text1 + '\"';
 				if(cnt>0) {
-					sql = sql+"AND";
+					sql = sql+"AND ";
 					cnt--;
 				}
 			}
-			if(text2.equals("")) {
-				sql = sql+"director_name = " +text2;
+			if(!text2.equals("")) {
+				sql = sql+"director_name = " + '\"' + text2 + '\"' ;
 				if(cnt>0) {
-					sql = sql+"AND";
+					sql = sql+"AND ";
 					cnt--;
 				}
 			}
 			
-			if(text3.equals("")) {
-				sql = sql+"actor_name = " +text3;
+			if(!text3.equals("")) {
+				sql = sql+"actor_name = " +'\"' + text3 + '\"';
 				if(cnt>0) {
 					sql = sql+"AND";
 					cnt--;
 				}
 			}
 				
-			if(text4.equals("")) {
-				sql = sql+"genre = " + text4;
+			if(!text4.equals("")) {
+				sql = sql+"genre = " + '\"' + text4 + '\"';
 				if(cnt>0) {
 					sql = sql+"AND";
 					cnt--;
 				}
 			}
 		
-			
-			System.out.println(sql);
+			 pstmt = connection.prepareStatement(sql);
+			 System.out.println(sql);
 			rs = pstmt.executeQuery();
-
 			while (rs.next())
 			{
 				str = rs.getString(1);
