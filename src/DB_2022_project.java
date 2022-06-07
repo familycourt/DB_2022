@@ -63,9 +63,9 @@ public class DB_2022_project extends JFrame{
 	
 	public void connect() {
 		String Driver="";
-		String url="jdbc:mysql://localhost:3306/?user=root&serverTimezone=Asia/Seoul&useSSL=false";
+		String url="jdbc:mysql://localhost:3306/?user=root&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true";
 		String userid="root";
-		String pwd = "0907";
+		String pwd = "sa192837";
 		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");

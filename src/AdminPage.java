@@ -117,9 +117,9 @@ public class AdminPage extends JFrame  implements ActionListener{
    
    public void connect() {
          String Driver = "";
-         String url = "jdbc:mysql://localhost:3306/mydb?user=root&serverTimezone=Asia/Seoul&useSSL=false";
+         String url = "jdbc:mysql://localhost:3306/madang?user=root&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true";
          String userid = "root";
-         String pwd = "0907";
+         String pwd = "sa192837";
 
          try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -182,7 +182,7 @@ public class AdminPage extends JFrame  implements ActionListener{
 
             
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`movie` (\r\n" + 
-                  "  `movie_number` INT(11) NOT NULL,\r\n" + 
+                  "  `movie_number` INT(11) NOT NULL AUTO_INCREMENT,\r\n" + 
                   "  `movie_name` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
                   "  `movie_time` INT(11) NULL DEFAULT NULL,\r\n" + 
                   "  `movie_rating` INT(11) NULL DEFAULT NULL,\r\n" + 
@@ -199,7 +199,7 @@ public class AdminPage extends JFrame  implements ActionListener{
             // Table `madang`.`theaters`
                      
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`theaters` (\r\n" + 
-                  "  `theater_number` INT(11) NOT NULL,\r\n" + 
+                  "  `theater_number` INT(11) NOT NULL AUTO_INCREMENT,\r\n" + 
                   "  `seat_count` INT(11) NULL DEFAULT NULL,\r\n" + 
                   "  `theater_use_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
                   "  PRIMARY KEY (`theater_number`))");   
@@ -211,7 +211,7 @@ public class AdminPage extends JFrame  implements ActionListener{
             // Table `madang`.`screening_schedule`
            
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`screening_schedule` (\r\n" + 
-                  "  `screening_schedule_number` INT(11) NOT NULL,\r\n" + 
+                  "  `screening_schedule_number` INT(11) NOT NULL AUTO_INCREMENT,\r\n" + 
                   "  `movie_number` INT(11) NOT NULL,\r\n" + 
                   "  `theater_number` INT(11) NOT NULL,\r\n" + 
                   "  `screening_start_date` DATE NULL DEFAULT NULL,\r\n" + 
@@ -237,7 +237,7 @@ public class AdminPage extends JFrame  implements ActionListener{
                      
             //여기
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`seat` (\r\n" + 
-                  "  `seat_number` INT(11) NOT NULL,\r\n" + // null?
+                  "  `seat_number` INT(11) NOT NULL AUTO_INCREMENT,\r\n" + // null?
                   "  `theater_number` INT(11) NOT NULL,\r\n" + 
                   "  `seat_use_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
                  // "  CONSTRAINT pk_seat`\r\n" + 
@@ -269,7 +269,7 @@ public class AdminPage extends JFrame  implements ActionListener{
             
                      
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`booking_info` (\r\n" + 
-                  "  `booking_number` INT(11) NOT NULL,\r\n" + 
+                  "  `booking_number` INT(11) NOT NULL AUTO_INCREMENT,\r\n" + 
                   "  `payment_method` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
                   "  `payment_status` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
                   "  `payment_amount` VARCHAR(45) NULL DEFAULT NULL,\r\n" + 
@@ -288,7 +288,7 @@ public class AdminPage extends JFrame  implements ActionListener{
 
             // 여기
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `madang`.`ticket` (\r\n" + 
-                  "  `tichet_number` INT(11) NOT NULL,\r\n" + 
+                  "  `tichet_number` INT(11) NOT NULL AUTO_INCREMENT,\r\n" + 
                   "  `screening_schedule_number` INT(11) NOT NULL,\r\n" + 
                   "  `theater_number` INT(11) NOT NULL,\r\n" + 
                   "  `seat_number` INT(11) NULL DEFAULT NULL,\r\n" + // 키 설정 필요    
@@ -384,6 +384,16 @@ public class AdminPage extends JFrame  implements ActionListener{
             stmt.executeUpdate("INSERT INTO seat VALUES(18, 9, 'o');");
             stmt.executeUpdate("INSERT INTO seat VALUES(19, 10, 'o');");
             stmt.executeUpdate("INSERT INTO seat VALUES(20, 10, 'o');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(21, 1, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(22, 2, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(23, 3, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(24, 4, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(25, 5, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(26, 6, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(27, 7, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(28, 8, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(29, 9, 'x');");
+            stmt.executeUpdate("INSERT INTO seat VALUES(30, 10, 'x');");
             
             // INSERT INTO user
             System.out.println("INSERT INTO user");   
