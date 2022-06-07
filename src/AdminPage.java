@@ -33,6 +33,7 @@ public class AdminPage extends JFrame  implements ActionListener{
        new AdminPage();
    }
    
+   
    String[] tables = {null ,"영화","상영일정","상영관", "티켓", "좌석", "회원고객", "예매정보"};
    JTextArea txtArea = new JTextArea("안녕");
    JPanel resultPanel = new JPanel();
@@ -41,7 +42,11 @@ public class AdminPage extends JFrame  implements ActionListener{
    JComboBox tableBox = new JComboBox(tables);
    JButton btnInput = new JButton("입력");
    JButton btnResetInput = new JButton("다시입력");
-   JTextField txtEdit = new JTextField(20);
+   JTextField txtTableDelete = new JTextField(5);
+   JTextField txtEditDelete = new JTextField(15);
+   JTextField txtTableChange = new JTextField(5);
+   JTextField txtSetChange = new JTextField(5);
+   JTextField txtEditChange = new JTextField(15);
    
    JTextField txt1 = new JTextField(10);
    JTextField txt2 = new JTextField(10);
@@ -74,9 +79,18 @@ public class AdminPage extends JFrame  implements ActionListener{
       panel.add(tableBox);
       panel.add(btnInput);
       panel.add(btnResetInput);
-      editPanel.add(new JLabel("여기에 query문을 입력해주세요"));
-      editPanel.add(txtEdit);
+      
+      editPanel.add(new JLabel("table(한글로)"));
+      editPanel.add(txtTableDelete);
+      editPanel.add(new JLabel("where"));
+      editPanel.add(txtEditDelete);
       editPanel.add(btnDelete);
+      editPanel.add(new JLabel("table(한글로)"));
+      editPanel.add(txtTableChange);
+      editPanel.add(new JLabel("set"));
+      editPanel.add(txtSetChange);
+      editPanel.add(new JLabel("where"));
+      editPanel.add(txtEditChange);
       editPanel.add(btnChange);
       
       add(panel, BorderLayout.NORTH);
@@ -95,7 +109,7 @@ public class AdminPage extends JFrame  implements ActionListener{
       btnDelete.addActionListener(new ActionListenerDelete());
       btnChange.addActionListener(new ActionListenerChange());
       
-        setSize(840, 200); 
+        setSize(1000, 200); 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -1002,14 +1016,33 @@ public class AdminPage extends JFrame  implements ActionListener{
 //         
          try {
          	
- 			String sql="";
- 			sql = txtEdit.getText();
+ 			String sql="delete from ";
+ 			if(txtTableDelete.getText().equals("영화"))
+ 				sql = sql + "movie where ";
+ 			else if(txtTableDelete.getText().equals("상영일정"))
+ 				sql = sql + "screening_schedule where ";
+ 			else if(txtTableDelete.getText().equals("상영관"))
+ 				sql = sql + "theaters where ";
+ 			else if(txtTableDelete.getText().equals("티켓"))
+ 				sql = sql + "ticket where ";
+ 			else if(txtTableDelete.getText().equals("좌석"))
+ 				sql = sql + "seat where ";
+ 			else if(txtTableDelete.getText().equals("회원고객"))
+ 				sql = sql + "user where ";
+ 			else if(txtTableDelete.getText().equals("예매정보"))
+ 				sql = sql + "booking_info where ";
+ 			else {
+ 				JOptionPane.showMessageDialog(null, "삭제가 불가합니다.\n 테이블을 다시 입력해주세요");
+ 				return;
+ 			}
+ 			
+ 			sql = sql + txtEditDelete.getText() + ";";
  	        System.out.println(sql);
  			pstmt = connection.prepareStatement(sql);
  			pstmt.executeUpdate();
  			JOptionPane.showMessageDialog(null, "삭제완료");
           }catch(Exception e){
-        	  JOptionPane.showMessageDialog(null, "삭제가 불가합니다.\n query문을 다시 입력해주세요");
+        	  JOptionPane.showMessageDialog(null, "삭제가 불가합니다.\n 조건문을 다시 입력해주세요");
          	 System.out.print(e);
           }
         }   
@@ -1022,14 +1055,33 @@ public class AdminPage extends JFrame  implements ActionListener{
         public void actionPerformed(ActionEvent e5) {
          
          try {
-          	
-  			String sql = txtEdit.getText();
+        	 String sql="update ";
+  			if(txtTableChange.getText().equals("영화"))
+  				sql = sql + "movie set ";
+  			else if(txtTableChange.getText().equals("상영일정"))
+  				sql = sql + "screening_schedule ";
+  			else if(txtTableChange.getText().equals("상영관"))
+  				sql = sql + "theaters set ";
+  			else if(txtTableChange.getText().equals("티켓"))
+  				sql = sql + "ticket set ";
+  			else if(txtTableChange.getText().equals("좌석"))
+  				sql = sql + "seat set ";
+  			else if(txtTableChange.getText().equals("회원고객"))
+  				sql = sql + "user set ";
+  			else if(txtTableChange.getText().equals("예매정보"))
+  				sql = sql + "booking_info set ";
+  			else {
+  				JOptionPane.showMessageDialog(null, "수정이 불가합니다.\n 테이블을 다시 입력해주세요");
+  				return;
+  			}
+  			
+  			sql = sql + txtSetChange.getText() + " where " + txtEditChange.getText() + ";";
   	        System.out.println(sql);
   			pstmt = connection.prepareStatement(sql);
   			pstmt.executeUpdate();
   			JOptionPane.showMessageDialog(null, "수정완료");
            }catch(Exception e){
-        	   JOptionPane.showMessageDialog(null, "수정이 불가합니다.\n query문을 다시 입력해주세요");
+        	   JOptionPane.showMessageDialog(null, "수정이 불가합니다.\n 조건문을 다시 입력해주세요");
           	 System.out.print(e);
            }
         }   
