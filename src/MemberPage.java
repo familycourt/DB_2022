@@ -316,8 +316,7 @@ public class MemberPage extends JFrame{
 	
 				pstmt.executeUpdate(String.format("INSERT INTO ticket (screening_schedule_number, theater_number, seat_number, booking_number, ticketing_status, standard_price, selling_price) VALUES(%d, %d, %d, %d, \"o\", 14000, 10000)", screening_schedule_number, theater_number, seat_number, booking_number));
 				
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				System.out.println(e);
 			}
 			
@@ -328,34 +327,33 @@ public class MemberPage extends JFrame{
 			try {
 				String search = txtInput.getText();
 				if (!search.isEmpty()) {
+					
 					String cnt_query = "SELECT COUNT(*) FROM movie WHERE movie_name=\"" + search + "\"";
 					pstmt = connection.prepareStatement(cnt_query);
 					rs = pstmt.executeQuery();
-					
 					rs.next();
 					int count = rs.getInt(1);
 					
-					String query = "SELECT * FROM movie WHERE movie_name=\"" + search + "\"";
-					pstmt = connection.prepareStatement(query);
-					System.out.println(query);
-					rs = pstmt.executeQuery();
-					rs.next();
 					if (count == 0)
 						JOptionPane.showMessageDialog(null, "영화명을 확인해주세요.");
 					else if (count > 1)
 						JOptionPane.showMessageDialog(null, "검색된 영화가 1개 이상입니다.");
 					else
 					{
+						String query = "SELECT * FROM movie WHERE movie_name=\"" + search + "\"";
+						pstmt = connection.prepareStatement(query);
+						System.out.println(query);
+						rs = pstmt.executeQuery();
+						rs.next();
 						bookTicket(rs.getInt(1), rs.getString(2));
 					}
+						
 				}
-				else {
+				else
 		        	  JOptionPane.showMessageDialog(null, "값을 입력해주세요.");
-				}
 			}
-			catch (Exception error) {
+			catch (Exception error)
 				 System.out.print(error);
-			}
 		}
 	}
 
