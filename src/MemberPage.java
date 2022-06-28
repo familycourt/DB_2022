@@ -80,9 +80,9 @@ public class MemberPage extends JFrame{
 	
 	public void connect() {
         String Driver = "";
-        String url = "jdbc:mysql://localhost:3306/madang?user=root&serverTimezone=Asia/Seoul&useSSL=false";
-        String userid = "root";
-        String pwd = "0907";
+        String url = "jdbc:mysql://localhost:3306/madang?user=root&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true";
+        String userid = "madang";
+        String pwd = "madang";
 
         try {
            Class.forName("com.mysql.cj.jdbc.Driver");
